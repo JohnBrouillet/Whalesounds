@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/soundsMenu.qml</file>
+        <file>qml/design.qss</file>
+        <file>qml/functions.js</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>qml/OptionsWindow.qml</file>
+    </qresource>
+</RCC>
