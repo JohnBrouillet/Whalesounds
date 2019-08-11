@@ -18,21 +18,23 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
     connect(&generator, &WaveGenerator::sendData, m_controls, &PlayerControls::generatorBuffer);
 
 
-    m_spectrogram = new SpectrogramWidget;
+    m_waterfall = new WaterfallWidget;
     spectroThread = new QThread;
     m_spectrum.moveToThread(spectroThread);
     spectroThread->start();
 
+    connect(m_controls, &PlayerControls::newFech, m_waterfall, &WaterfallWidget::setFech);
+    connect(m_controls, &PlayerControls::newFech, &m_spectrum, &Spectrogram::setFech);
+
     connect(m_controls, &PlayerControls::bufferToGo, &m_spectrum, &Spectrogram::computeFFT);
-    connect(&m_spectrum, &Spectrogram::dataReady, m_spectrogram, &SpectrogramWidget::plotData);
-    connect(m_controls, &PlayerControls::newFech, m_spectrogram, &SpectrogramWidget::setFech);
+    connect(&m_spectrum, &Spectrogram::dataReady, m_waterfall, &WaterfallWidget::plotData);
 
 
     QQuickWidget *buttonsWidget = new QQuickWidget;
     buttonsWidget->setClearColor(QColor("#dfe4ea"));
     buttonsWidget->rootContext()->setContextProperty("jsoncare", &jsoncare);
     buttonsWidget->rootContext()->setContextProperty("playercontrols", m_controls);
-    buttonsWidget->rootContext()->setContextProperty("spectrowidget", m_spectrogram);
+    buttonsWidget->rootContext()->setContextProperty("waterfall", m_waterfall);
     buttonsWidget->rootContext()->setContextProperty("wavegenerator", &generator);
     buttonsWidget->setSource(QUrl("qrc:qml/soundsMenu.qml"));
 
@@ -50,7 +52,7 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
     grid->addWidget(buttonsWidget, 0, 0, 2, 1);
 
     grid->addWidget(m_audioWidget, 0, 1);
-    grid->addWidget(m_spectrogram, 1, 1);
+    grid->addWidget(m_waterfall, 1, 1);
 
     setLayout(grid);
 }

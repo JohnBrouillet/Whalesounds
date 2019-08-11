@@ -18,6 +18,7 @@
 #include <QtQuickWidgets/QQuickWidget>
 
 #include "audiowidget.h"
+#include "waterfallwidget.h"
 #include "include/audio/playercontrols.h"
 #include "include/processing/spectrogram.h"
 #include "include/utils/jsoncaretaker.h"
@@ -47,7 +48,7 @@ public Q_SLOTS:
 private:
     PlayerControls * m_controls;
     AudioWidget * m_audioWidget;
-    SpectrogramWidget * m_spectrogram;
+    WaterfallWidget * m_waterfall;
     Spectrogram m_spectrum;
     QThread * spectroThread;
 

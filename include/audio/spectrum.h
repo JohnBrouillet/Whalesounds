@@ -88,6 +88,10 @@ const qreal SpectrumAnalyserMultiplier = 0.15;
 const int   NullMessageTimeout      = -1;
 
 
+const int NFFT = 8*2048;
+const int maxFreqDisp = 15000;
+
+
 //-----------------------------------------------------------------------------
 // Types and data structures
 //-----------------------------------------------------------------------------

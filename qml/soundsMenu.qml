@@ -399,7 +399,7 @@ Item {
                 CheckBox{
                     id: checkX
                     visible: true
-                    onCheckedChanged: spectrowidget.zoom(checkX.checkState, checkY.checkState)
+                    onCheckedChanged: waterfall.zoom(checkX.checkState, checkY.checkState)
                 }
 
                 Button{
@@ -407,7 +407,7 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: spectrowidget.zoomSpectro(1)
+                    onClicked: waterfall.zoomSpectro(1)
                 }
 
                 Label{
@@ -421,7 +421,7 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: spectrowidget.changeColorRange(1)
+                    onClicked: waterfall.changeColorRange(1)
                 }
 
                 Label{
@@ -436,7 +436,7 @@ Item {
 
                 CheckBox{
                     id: checkY
-                    onCheckedChanged: spectrowidget.zoom(checkX.checkState, checkY.checkState)
+                    onCheckedChanged: waterfall.zoom(checkX.checkState, checkY.checkState)
                 }
 
                 Button{
@@ -444,7 +444,7 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: spectrowidget.zoomSpectro(0)
+                    onClicked: waterfall.zoomSpectro(0)
 
                 }
 
@@ -454,7 +454,7 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: spectrowidget.changeColorRange(0)
+                    onClicked: waterfall.changeColorRange(0)
                 }
 
                 Button{
@@ -463,7 +463,7 @@ Item {
                     icon.height: 32
 
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: spectrowidget.reinit();
+                    onClicked: waterfall.reinit();
 
                 }
 

@@ -43,6 +43,7 @@ SOURCES += \
     src/gui/audiowidget.cpp \
     src/gui/mainwidget.cpp \
     src/gui/qcustomplot.cpp \
+    src/gui/waterfallwidget.cpp \
     src/main.cpp \
     src/processing/cepstrogramme.cpp \
     src/processing/filt.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     include/gui/audiowidget.h \
     include/gui/mainwidget.h \
     include/gui/qcustomplot.h \
+    include/gui/waterfallwidget.h \
     include/processing/_kiss_fft_guts.h \
     include/processing/cepstrogramme.h \
     include/processing/filt.h \
