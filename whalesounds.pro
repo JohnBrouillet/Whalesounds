@@ -9,12 +9,17 @@ QT       += core gui qml quickwidgets multimedia multimediawidgets printsupport 
 android{
     QT += androidextras
     DEFINES += AUDIO_ONLY
+    QMAKE_CXXFLAGS_RELEASE += -O2
 }
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = whalesounds
 TEMPLATE = app
+
+
+msvc: QMAKE_CXXFLAGS_RELEASE += /O2
+
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -35,6 +40,9 @@ DEFINES += AUDIO_ONLY
 CONFIG += c++11
 
 SOURCES += \
+    3rdparties/filter/filt.cpp \
+    3rdparties/kiss_fft/kiss_fft.c \
+    3rdparties/qcustomplot/qcustomplot.cpp \
     src/audio/bufferdecoderthread.cpp \
     src/audio/engine.cpp \
     src/audio/playercontrols.cpp \
@@ -42,17 +50,19 @@ SOURCES += \
     src/audio/wavfile.cpp \
     src/gui/audiowidget.cpp \
     src/gui/mainwidget.cpp \
-    src/gui/qcustomplot.cpp \
     src/gui/waterfallwidget.cpp \
     src/main.cpp \
     src/processing/cepstrogramme.cpp \
-    src/processing/filt.cpp \
-    src/processing/kiss_fft.c \
     src/processing/spectrogram.cpp \
     src/utils/jsoncaretaker.cpp \
     src/utils/utils.cpp
 
 HEADERS += \
+    3rdparties/filter/filt.h \
+    3rdparties/kiss_fft/_kiss_fft_guts.h \
+    3rdparties/kiss_fft/kiss_fft.h \
+    3rdparties/kiss_fft/kissfft.hh \
+    3rdparties/qcustomplot/qcustomplot.h \
     include/audio/bufferdecoderthread.h \
     include/audio/engine.h \
     include/audio/playercontrols.h \
@@ -61,13 +71,8 @@ HEADERS += \
     include/audio/wavfile.h \
     include/gui/audiowidget.h \
     include/gui/mainwidget.h \
-    include/gui/qcustomplot.h \
     include/gui/waterfallwidget.h \
-    include/processing/_kiss_fft_guts.h \
     include/processing/cepstrogramme.h \
-    include/processing/filt.h \
-    include/processing/kiss_fft.h \
-    include/processing/kissfft.hh \
     include/processing/spectrogram.h \
     include/utils/jsoncaretaker.h \
     include/utils/utils.h

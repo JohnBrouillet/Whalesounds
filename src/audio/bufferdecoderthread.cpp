@@ -14,8 +14,6 @@ void getBufferLevels(const QByteArray & buffer, int channels, qreal peak, QVecto
 
 }
 
-
-
 qreal getPeakValue(const QAudioFormat& format)
 {
     // Note: Only the most common sample formats are supported
@@ -111,42 +109,43 @@ void BufferDecoderThread::channelCountChanged(int value)
 
 void BufferDecoderThread::getBuffer(qint64 position, qint64 length, const QByteArray &buffer)
 {
-    const int buf_size = length / (2 * format.channelCount());
-    if(!init)
+    if(buffer.size())
     {
-        m_buffer.resize(1);
-        for(int i = 0; i < 1; i++)
+        const int buf_size = length / (2 * format.channelCount());
+        if(!init)
         {
-            m_buffer[i].reserve(sampleCount);
-            for (int j = 0; j < sampleCount; ++j)
+            m_buffer.resize(1);
+            for(int i = 0; i < 1; i++)
             {
-                m_buffer[i].append(0);
+                m_buffer[i].reserve(sampleCount);
+                for (int j = 0; j < sampleCount; ++j)
+                {
+                    m_buffer[i].append(0);
+                }
             }
+
+            init = true;
         }
 
-        init = true;
-    }
-
-
-    QVector<QVector<qreal>> new_data(1);
-    getBufferLevels(format, buffer, new_data);
-    static const int resolution = 1;
-    int availableSamples = buf_size;
-    for(int i = 0; i < 1; i++)
-    {
-        /*if (availableSamples < sampleCount)
+        QVector<QVector<qreal>> new_data(1);
+        getBufferLevels(format, buffer, new_data);
+        static const int resolution = 1;
+        int availableSamples = buf_size;
+        for(int i = 0; i < 1; i++)
         {
-            QVector<double>::const_iterator first = m_buffer[i].begin() + availableSamples;
-            QVector<double>::const_iterator last = m_buffer[i].end();
+            /*if (availableSamples < sampleCount)
+            {
+                QVector<double>::const_iterator first = m_buffer[i].begin() + availableSamples;
+                QVector<double>::const_iterator last = m_buffer[i].end();
 
-            std::vector<double> new_buffer(first, last);
-            new_buffer.insert(new_buffer.end(), new_data[i].begin(), new_data[i].end());
+                std::vector<double> new_buffer(first, last);
+                new_buffer.insert(new_buffer.end(), new_data[i].begin(), new_data[i].end());
 
-            m_buffer[i] = new_data[i]; //QVector<double>::fromStdVector(new_buffer);
+                m_buffer[i] = new_data[i]; //QVector<double>::fromStdVector(new_buffer);
 
-        }*/
-        m_buffer[i] = new_data[i];
-       emit bufferReady(i, m_buffer[i]);
+            }*/
+            m_buffer[i] = new_data[i];
+           emit bufferReady(i, m_buffer[i]);
+        }
     }
-
 }

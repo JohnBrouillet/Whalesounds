@@ -3,8 +3,7 @@
 
 #include <QWidget>
 
-#include "kiss_fft.h"
-#include "include/gui/qcustomplot.h"
+#include "3rdparties/qcustomplot/qcustomplot.h"
 
 
 class CepstrogramWidget : public QWidget

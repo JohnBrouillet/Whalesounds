@@ -37,7 +37,7 @@
  * SUCH DAMAGE.
  */
 
-#include "include/processing/filt.h"
+#include "filt.h"
 #define ECODE(x) {m_error_flag = x; return;}
 
 // Handles LPF and HPF case
