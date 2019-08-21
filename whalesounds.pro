@@ -92,8 +92,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     data_qrc.qrc \
-    icons/icons.qrc \
-    imagine-assets.qrc
+    icons/icons.qrc
 
 DISTFILES += \
     android/AndroidManifest.xml \
