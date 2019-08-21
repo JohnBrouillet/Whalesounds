@@ -7,6 +7,8 @@ import "functions.js" as Func
 
 Item {
     id: menuFiles
+
+    // beurk !!!
     height: 1080-50
     width: 1150
 
@@ -23,26 +25,6 @@ Item {
         ColumnLayout{
             spacing: 16
             Layout.preferredWidth: 30
-
-            Button{
-                Layout.alignment: Qt.AlignHCenter
-                width: parent.width
-                enabled: false
-                visible: false
-                text:"Générateur de son"
-                onClicked:{
-                    animalItem.visible = false
-                    generator.visible = true;
-                    freqActivator.visible = true;
-                    amplSlider.visible = true;
-                    songNameLabel.text = "Générateur de son"
-                    timelabel.text = "00:00/00:00"
-                    infoLabel.text = ""
-                    playercontrols.setGeneratorMode(true);
-                }
-
-
-            }
 
             ButtonGroup{
                 buttons: rowbutton.children
@@ -84,7 +66,6 @@ Item {
                 }
             }
 
-
             Frame {
                 id: filesFrame
                 leftPadding: 1
@@ -124,7 +105,6 @@ Item {
                             generator.visible = false;
                             freqActivator.visible = false;
                             amplSlider.visible = false;
-                            playercontrols.setGeneratorMode(false);
                         }
 
                     }
@@ -429,7 +409,6 @@ Item {
                     horizontalAlignment: Label.Center
                 }
 
-
                 Label{
                     text: "Zoom vertical"
                 }
@@ -445,9 +424,7 @@ Item {
                     icon.height: 32
 
                     onClicked: waterfall.zoomSpectro(0)
-
                 }
-
 
                 Button{
                     icon.name: "moins"
@@ -464,7 +441,6 @@ Item {
 
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: waterfall.reinit();
-
                 }
 
 

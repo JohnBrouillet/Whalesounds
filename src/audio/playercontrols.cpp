@@ -11,16 +11,13 @@ PlayerControls::PlayerControls(QWidget *parent)
     : QWidget(parent), m_engine(new Engine)
 {
     indexFile = 0;
-    generatorMode = false;
     isLoaded = false;
     engineConnect();
-
 
     QThread* decoderThread = new QThread;
     decoder.moveToThread(decoderThread);
     qRegisterMetaType<QVector<QPointF>>("QVector<double>");
     decoderThread->start();
-
 }
 
 void PlayerControls::engineConnect()
@@ -34,9 +31,7 @@ void PlayerControls::engineConnect()
     connect(m_engine, &Engine::channelCountChanged, this, &PlayerControls::channelCountChanged);
     connect(m_engine, &Engine::channelCountChanged, &decoder, &BufferDecoderThread::channelCountChanged);
 
-
     connect(m_engine, &Engine::playPositionChanged, this, &PlayerControls::updateDurationInfo);
-
 
     connect(m_engine, &Engine::errorMessage, [&](const QString& heading, const QString & detail){
         qDebug() << "heading " << heading;
@@ -44,7 +39,6 @@ void PlayerControls::engineConnect()
     });
 
     connect(this, &PlayerControls::generatorBuffer, m_engine, &Engine::setGeneratorBuffer);
-
 }
 
 
@@ -56,8 +50,7 @@ void PlayerControls::updateDurationInfo(qint64 currentInfo)
     if (currentInfo || m_duration)
     {
         QTime currentTime((time / 3600) % 60, (time / 60) % 60, time % 60, (time * 1000) % 1000);
-        QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60,
-            m_duration % 60, (m_duration * 1000) % 1000);
+        QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60, m_duration % 60, (m_duration * 1000) % 1000);
         QString format = "mm:ss";
         if (m_duration > 3600)
             format = "hh:mm:ss";
@@ -72,13 +65,11 @@ void PlayerControls::loadFiles(QStringList filenames)
    indexFile = 0;
    isLoaded = false;
 
-
    filesPath.clear();
    foreach(const QString & file, filenames)
        filesPath.push_back(file);
 
    Q_EMIT newIndexFile(indexFile, filesPath.size());
-
    Q_EMIT newFiles();
 }
 
@@ -109,7 +100,7 @@ void PlayerControls::setState(QAudio::Mode mode, QAudio::State state)
 
 void PlayerControls::playClicked()
 {
-    if(generatorMode || filesPath.size())
+    if(filesPath.size())
     {
         switch (m_playerState)
         {
@@ -119,22 +110,9 @@ void PlayerControls::playClicked()
                 if(!isLoaded)
                 {
                     m_engine->reset();
-                    if(!generatorMode && m_engine->loadFile(filesPath[indexFile]))
+                    if(m_engine->loadFile(filesPath[indexFile]))
                     {
                         Q_EMIT newText("Fech : " + QString::number(m_engine->format().sampleRate()) + "Hz, channels : " + QString::number(m_engine->format().channelCount()));
-                        m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
-                        updateDurationInfo(m_duration);
-                        Q_EMIT newFech(m_engine->format().sampleRate());
-
-                        m_engine->startPlayback();
-                        isLoaded = true;
-
-                    }
-                    else if(generatorMode)
-                    {
-                        m_engine->reset();
-                        m_engine->generateTone(Tone());
-                        Q_EMIT newText("Fech : " + QString::number(m_engine->format().sampleRate()) + "Hz");
                         m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
                         updateDurationInfo(m_duration);
                         Q_EMIT newFech(m_engine->format().sampleRate());
@@ -146,7 +124,6 @@ void PlayerControls::playClicked()
                     {
                         Q_EMIT newText("Fichier introuvable");
                         Q_EMIT newState(1);
-
                     }
                     break;
                 }

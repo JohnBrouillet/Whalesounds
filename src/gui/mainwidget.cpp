@@ -4,7 +4,7 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
 {
     jsoncare.setSpecies();
     dataAbsPath = path;
-    connect(&jsoncare, SIGNAL(soundsPath(QStringList)), this, SLOT(setFiles(QStringList)));
+    connect(&jsoncare, &JsonCaretaker::soundsPath, this, &MainWidget::setFiles);
 
     m_controls = new PlayerControls(this);
 
@@ -58,55 +58,8 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
 }
 
 
-void MainWidget::setImage(QString path)
-{
-    QPixmap pix(path);
-
-
-}
-
 void MainWidget::setFiles(QStringList path)
 {
     m_controls->loadFiles(path);
 }
 
-void MainWidget::openFileNameReady()
-{
-    qDebug() << "get buf";
-}
-
-void MainWidget::seek(int seconds)
-{
-   // m_player->setPosition(seconds * 1000);
-}
-
-void MainWidget::durationChanged(qint64 duration)
-{
-    m_duration = duration / 1000;
-   // m_slider->setMaximum(m_duration);
-}
-
-void MainWidget::positionChanged(qint64 progress)
-{
-    //if (!m_slider->isSliderDown())
-    //    m_slider->setValue(progress / 1000);
-
-    updateDurationInfo(progress / 1000);
-}
-
-void MainWidget::updateDurationInfo(qint64 currentInfo)
-{
-    QString tStr;
-    if (currentInfo || m_duration) {
-        QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60,
-            currentInfo % 60, (currentInfo * 1000) % 1000);
-        QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60,
-            m_duration % 60, (m_duration * 1000) % 1000);
-        QString format = "mm:ss";
-        if (m_duration > 3600)
-            format = "hh:mm:ss";
-        tStr = currentTime.toString(format) + " / " + totalTime.toString(format);
-    }
-
-
-}

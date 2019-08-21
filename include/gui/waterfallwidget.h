@@ -1,7 +1,7 @@
 #ifndef WATERFALLWIDGET_H
 #define WATERFALLWIDGET_H
 
-#include "include/gui/qcustomplot.h"
+#include "3rdparties/qcustomplot/qcustomplot.h"
 
 class WaterfallWidget : public QWidget
 {

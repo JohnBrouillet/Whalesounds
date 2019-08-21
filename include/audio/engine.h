@@ -110,20 +110,7 @@ bool initialize();
      */
     bool loadFile(const QString &fileName);
 
-    /**
-     * Generate tone
-     */
-    bool generateTone(const Tone &tone);
 
-    /**
-     * Generate tone
-     */
-    bool generateSweptTone(qreal amplitude);
-
-    /**
-     * Initialize for recording
-     */
-    bool initializeRecord();
 
     /**
      * Position of the audio input device.
@@ -161,16 +148,12 @@ bool initialize();
      */
     qint64 dataLength() const { return m_dataLength; }
 
-    /**
-     * Set window function applied to audio data before spectral analysis.
-     */
-    void setWindowFunction(WindowFunction type);
+
 
     void setPlayPosition(qint64 position, bool forceEmit = false);
 
 
 public Q_SLOTS:
-    void startRecording();
     void startPlayback();
     void suspend();
     void setAudioInputDevice(const QAudioDeviceInfo &device);
@@ -229,13 +212,7 @@ Q_SIGNALS:
      */
     void levelChanged(qreal rmsLevel, qreal peakLevel, int numSamples);
 
-    /**
-     * Spectrum has changed.
-     * \param position Position of start of window in bytes
-     * \param length   Length of window in bytes
-     * \param spectrum Resulting frequency spectrum
-     */
-    //void spectrumChanged(qint64 position, qint64 length, const FrequencySpectrum &spectrum);
+
 
     /**
      * Buffer containing audio data has changed.
@@ -247,29 +224,22 @@ Q_SIGNALS:
 public Q_SLOTS:
     void audioNotify();
     void audioStateChanged(QAudio::State state);
-    void audioDataReady();
-   // void spectrumChanged(const FrequencySpectrum &spectrum);
 
 public:
     void resetAudioDevices();
 
     bool selectFormat();
-    void stopRecording();
     void stopPlayback();
     void setState(QAudio::State state);
     void setState(QAudio::Mode mode, QAudio::State state);
     void setFormat(const QAudioFormat &format);
-    void setRecordPosition(qint64 position, bool forceEmit = false);
-    void calculateLevel(qint64 position, qint64 length);
-    void calculateSpectrum(qint64 position);
-    void setLevel(qreal rmsLevel, qreal peakLevel, int numSamples);
+
 
 
 private:
     QAudio::Mode        m_mode;
     QAudio::State       m_state;
 
-    bool                m_generateTone;
     SweptTone           m_tone;
 
     WavFile*            m_file;

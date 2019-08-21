@@ -8,7 +8,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "qcustomplot.h"
+#include "3rdparties/qcustomplot/qcustomplot.h"
 
 class AudioWidget : public QWidget
 {

@@ -10,15 +10,12 @@ void Spectrogram::computeFFT(int i, QVector<double> data)
 {
     const int mean = 1;
     kiss_fft_cfg cfg = kiss_fft_alloc( NFFT , 0 , 0, 0 );
-   // kiss_fft_cfg inverse_cfg = kiss_fft_alloc( NFFT , 1 , 0, 0 );
-
     QVector<double> out(int(maxFreqDisp * NFFT / fech), 0);
 
     for(int i = 0; i < mean; i++)
     {
         kiss_fft_cpx* cx_in = new kiss_fft_cpx[data.size() / mean];
         kiss_fft_cpx* cx_out = new kiss_fft_cpx[NFFT];
-        //kiss_fft_cpx* cx_out_cepstre = new kiss_fft_cpx[NFFT];
 
         for(int j = i * data.size() / mean; j < (i+1) * data.size() / mean; j++)
         {
@@ -28,24 +25,12 @@ void Spectrogram::computeFFT(int i, QVector<double> data)
 
         kiss_fft( cfg , cx_in , cx_out );
 
-       /* for(int i = 0; i < NFFT; i++)
-            cx_out[i].r = std::log(std::abs(cx_out[i].r));
-
-        kiss_fft(inverse_cfg, cx_out, cx_out_cepstre);
-
-        for(int i = 0; i < int(maxFreqDisp * NFFT / fech); i++)
-            out[i] = std::abs(cx_out_cepstre[i].r);*/
-
-
         for(int d = 0; d < int(maxFreqDisp * NFFT / fech); d++)
-        {
                 out[d] += (std::abs(cx_out[d].r)) / mean;
-        }
 
         delete[] cx_in;
         delete[] cx_out;
     }
-
 
     emit dataReady(out);
 }

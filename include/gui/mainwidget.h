@@ -32,18 +32,11 @@ class MainWidget : public QWidget
 public:
     MainWidget(QString path);
 
-    void updateDurationInfo(qint64 currentInfo);
-
 private:
     void engineConnect();
 
 public Q_SLOTS:
-    void seek(int seconds);
-    void durationChanged(qint64 duration);
-    void positionChanged(qint64 progress);
-    void openFileNameReady();
     void setFiles(QStringList path);
-    void setImage(QString path);
 
 private:
     PlayerControls * m_controls;

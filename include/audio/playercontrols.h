@@ -90,7 +90,6 @@ public Q_SLOTS:
     void next();
     void previous();
     void playClicked();
-    void setGeneratorMode(bool mode){ generatorMode = mode; }
     void reloadBuffer(bool reload)
     {
         isLoaded = reload;
@@ -125,7 +124,6 @@ private:
     int indexFile;
 
     bool isLoaded;
-    bool generatorMode;
 };
 
 #endif // PLAYERCONTROLS_H
