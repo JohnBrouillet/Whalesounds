@@ -53,8 +53,6 @@ SOURCES += \
     src/gui/waterfallwidget.cpp \
     src/main.cpp \
     src/processing/cepstrogramme.cpp \
-    src/processing/filt.cpp \
-    src/processing/kiss_fft.c \
     src/processing/spectrogram.cpp \
     src/utils/jsoncaretaker.cpp \
     src/utils/utils.cpp
@@ -75,9 +73,6 @@ HEADERS += \
     include/gui/mainwidget.h \
     include/gui/waterfallwidget.h \
     include/processing/cepstrogramme.h \
-    include/processing/filt.h \
-    include/processing/kiss_fft.h \
-    include/processing/kissfft.hh \
     include/processing/spectrogram.h \
     include/utils/jsoncaretaker.h \
     include/utils/utils.h
