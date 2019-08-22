@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>whalesounds/32x32/next.png</file>
+        <file>whalesounds/32x32/pause.png</file>
+        <file>whalesounds/32x32/previous.png</file>
+        <file>whalesounds/32x32/repeat.png</file>
+        <file>whalesounds/32x32/stop.png</file>
+        <file>whalesounds/32x32@2/next.png</file>
+        <file>whalesounds/32x32@2/pause.png</file>
+        <file>whalesounds/32x32@2/previous.png</file>
+        <file>whalesounds/32x32@2/repeat.png</file>
+        <file>whalesounds/32x32@2/stop.png</file>
+        <file>whalesounds/index.theme</file>
+        <file>whalesounds/32x32/play.png</file>
+        <file>whalesounds/32x32@2/play.png</file>
+        <file>whalesounds/32x32/zoomPx.png</file>
+        <file>whalesounds/32x32/zoomPy.png</file>
+        <file>whalesounds/32x32/moins.png</file>
+        <file>whalesounds/32x32/plus.png</file>
+    </qresource>
+</RCC>
