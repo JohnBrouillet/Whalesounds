@@ -270,6 +270,8 @@ Item {
             }
 
 
+
+
             Label
             {
                 Layout.alignment: Qt.AlignHCenter
@@ -281,15 +283,6 @@ Item {
                 }
             }
 
-            Label
-            {
-                Layout.alignment: Qt.AlignHCenter
-                id: infoLabel
-                Connections{
-                    target: playercontrols
-                    onNewText: { infoLabel.text = _text;}
-                }
-            }
 
             RowLayout {
                 spacing: 8
@@ -444,6 +437,16 @@ Item {
                 }
 
 
+            }
+
+            Label
+            {
+                Layout.alignment: Qt.AlignHCenter
+                id: infoLabel
+                Connections{
+                    target: jsoncare
+                    onCopyrights: { infoLabel.text = _copyrights;}
+                }
             }
 
 

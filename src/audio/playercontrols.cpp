@@ -112,7 +112,6 @@ void PlayerControls::playClicked()
                     m_engine->reset();
                     if(m_engine->loadFile(filesPath[indexFile]))
                     {
-                        Q_EMIT newText("Fech : " + QString::number(m_engine->format().sampleRate()) + "Hz, channels : " + QString::number(m_engine->format().channelCount()));
                         m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
                         updateDurationInfo(m_duration);
                         Q_EMIT newFech(m_engine->format().sampleRate());
