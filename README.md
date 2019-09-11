@@ -19,13 +19,15 @@ Besides, json file has this architecture :
 		"group of related audio files 1":
 		{
 			"image": "path to a picture",
-			"sons": ["path to audio file 1", "path to audio file 2",...]
+			"sons": ["path to audio file 1", "path to audio file 2",...],
+			"credits" : "credits"
 		},
 
 		"group of related audio files 2":
 		{
 			"image": "path to a picture",
-			"sons": ["path to audio file 1", "path to audio file 2",...]
+			"sons": ["path to audio file 1", "path to audio file 2",...],
+			"credits" : "credits"
 		},
 	},
 
@@ -34,7 +36,8 @@ Besides, json file has this architecture :
 		"group of related audio files 1":
 		{
 			"image": "path to a picture",
-			"sons": ["path to audio file 1", "path to audio file 2",...]
+			"sons": ["path to audio file 1", "path to audio file 2",...],
+			"credits" : "credits"
 		}
 	}
 }

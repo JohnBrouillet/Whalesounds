@@ -23,7 +23,7 @@ public:
 
 
 public Q_SLOTS:
-    void computeFFT(int i, QVector<double> data);
+    void computeFFT(int channel, QVector<double> data);
     void setFech(int _fech);
 
 Q_SIGNALS:

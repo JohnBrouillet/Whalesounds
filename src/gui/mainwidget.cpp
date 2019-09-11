@@ -13,6 +13,7 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
     connect(m_controls, &PlayerControls::bufferToGo, m_audioWidget, &AudioWidget::getData);
     connect(m_controls, &PlayerControls::dataLengthChanged, m_audioWidget, &AudioWidget::dataLengthChanged);
     connect(m_controls, &PlayerControls::channelCountChanged, m_audioWidget, &AudioWidget::channelCountChanged);
+    connect(m_controls, &PlayerControls::specieLoadedSignal, m_audioWidget, &AudioWidget::setLoadedFileLabel);
 
     connect(&generator, &WaveGenerator::sendData, m_audioWidget, &AudioWidget::getData);
     connect(&generator, &WaveGenerator::sendData, m_controls, &PlayerControls::generatorBuffer);
@@ -36,6 +37,7 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
     buttonsWidget->rootContext()->setContextProperty("playercontrols", m_controls);
     buttonsWidget->rootContext()->setContextProperty("waterfall", m_waterfall);
     buttonsWidget->rootContext()->setContextProperty("wavegenerator", &generator);
+    buttonsWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     buttonsWidget->setSource(QUrl("qrc:qml/soundsMenu.qml"));
 
 #ifndef AUDIO_ONLY
@@ -58,8 +60,8 @@ MainWidget::MainWidget(QString path) : jsoncare(path + "/whale_data.json", path)
 }
 
 
-void MainWidget::setFiles(QStringList path)
+void MainWidget::setFiles(QString specie, QStringList path)
 {
-    m_controls->loadFiles(path);
+    m_controls->loadFiles(specie, path);
 }
 

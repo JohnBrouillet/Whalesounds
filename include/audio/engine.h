@@ -276,8 +276,10 @@ private:
     QByteArray          m_spectrumBuffer;
     //SpectrumAnalyser    m_spectrumAnalyser;
     qint64              m_spectrumPosition;
+    qint64              m_prevPlayPosition;
 
     int                 m_count;
+
 
     QVector<double> m_generatorBuffer;
 

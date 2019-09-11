@@ -46,6 +46,7 @@ void JsonCaretaker::sendPaths(QString species)
     Q_EMIT name(species);
     getImagePath(species);
     getSoundsPath(species);
+    getCopyrights(species);
 }
 
 void JsonCaretaker::getImagePath(QString species)
@@ -61,7 +62,12 @@ void JsonCaretaker::getSoundsPath(QString species)
     foreach(const QVariant & s, soundsList)
         sounds << absPath + s.toString();
 
-    Q_EMIT soundsPath(sounds);
+    Q_EMIT soundsPath(species, sounds);
+}
+
+void JsonCaretaker::getCopyrights(QString species)
+{
+    Q_EMIT copyrights(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["credits"].toString());
 }
 
 void JsonCaretaker::printKeyValues()

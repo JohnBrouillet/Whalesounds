@@ -22,6 +22,7 @@ public:
 
     void getImagePath(QString species);
     void getSoundsPath(QString species);
+    void getCopyrights(QString species);
 
 public Q_SLOTS:
     void sendPaths(QString species);
@@ -31,9 +32,10 @@ public Q_SLOTS:
 Q_SIGNALS:
     void sendNames(QVariantList family, QVariantList species);
 
-    void soundsPath(QStringList);
+    void soundsPath(QString, QStringList);
     void imagePath(QString _path);
     void name(QString _name);
+    void copyrights(QString _copyrights);
 
 
 private:

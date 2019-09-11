@@ -67,11 +67,11 @@
 // Constants
 //-----------------------------------------------------------------------------
 
-const qint64 BufferDurationUs       = 15000000;
-const int    NotifyIntervalMs       = 100;
+const qint64 BufferDurationUs       = 15000;
+const int    NotifyIntervalMs       = 2;
 
 // Size of the level calculation window in microseconds
-const int    LevelWindowUs          = 0.1 * 1000000;
+const int    LevelWindowUs          = 100 * 1000;
 
 //-----------------------------------------------------------------------------
 // Constructor and destructor
@@ -288,14 +288,16 @@ void Engine::audioNotify()
                     m_bufferPosition = 0;
                     m_dataLength = 0;
                     // Data needs to be read into m_buffer in order to be analysed
-                    const qint64 readPos = qMax(qint64(0), qMin(levelPosition, spectrumPosition));
-                    const qint64 readEnd = qMin(m_analysisFile->size(), qMax(levelPosition + m_levelBufferLength, spectrumPosition + m_spectrumBufferLength));
-                    const qint64 readLen = readEnd - readPos + audioLength(m_format, WaveformWindowDuration);
+                    const qint64 readPos = qMax(qint64(0), qMin(qMin(levelPosition, spectrumPosition), m_prevPlayPosition));
+                    const qint64 readEnd = qMin(m_analysisFile->size(), playPosition);
+                    const qint64 readLen = readEnd - readPos;// + audioLength(m_format, WaveformWindowDuration);
 
-                 /*   qDebug() << "Engine::audioNotify [1]"
+                    /*qDebug() << "Engine::audioNotify [1]"
                              << "analysisFileSize" << m_analysisFile->size()
                              << "readPos" << readPos
-                             << "readLen" << readLen;*/
+                             << "readEnd" << readEnd
+                             << "readLen" << readLen
+                             << "playposition" << playPosition;*/
 
                     if (m_analysisFile->seek(readPos + m_analysisFile->headerLength()))
                     {
@@ -322,6 +324,8 @@ void Engine::audioNotify()
                 if (playPosition >= m_dataLength)
                     stopPlayback();
             }
+
+            m_prevPlayPosition = playPosition;
         }
         break;
     }
@@ -426,10 +430,11 @@ bool Engine::initialize()
             m_audioOutput->setNotifyInterval(NotifyIntervalMs);
             m_audioOutput->setCategory(m_audioOutputCategory);
         }
-    } else {
+    }
+    else
+    {
         if (m_file)
-            Q_EMIT errorMessage(tr("Audio format not supported"),
-                              formatToString(m_format));
+            Q_EMIT errorMessage(tr("Audio format not supported"), formatToString(m_format));
         else
             Q_EMIT errorMessage(tr("No common input / output format found"), "");
     }
@@ -560,8 +565,7 @@ void Engine::setFormat(const QAudioFormat &format)
     const bool changed = (format != m_format);
     m_format = format;
     m_levelBufferLength = audioLength(m_format, LevelWindowUs);
-    m_spectrumBufferLength = SpectrumLengthSamples *
-                            (m_format.sampleSize() / 8) * m_format.channelCount();
+    m_spectrumBufferLength = NFFT * (m_format.sampleSize() / 8) * m_format.channelCount();
     if (changed)
         Q_EMIT formatChanged(m_format);
 }
