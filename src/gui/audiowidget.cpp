@@ -10,14 +10,24 @@ AudioWidget::AudioWidget()
         xAxis.push_back(i);
 
     plot = new QCustomPlot;
+
+    plot->plotLayout()->insertRow(0);
+    text = new QCPTextElement(plot, "", QFont("helvetica", 11, QFont::Normal));
+    text->setTextColor(QColor(102,108,118));
+    plot->plotLayout()->addElement(0, 0, text);
+
     plot->addGraph();
 
     plotDesign();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(plot);
-
     setLayout(mainLayout);
+}
+
+void AudioWidget::setLoadedFileLabel(QString specie)
+{
+    text->setText(specie);
 }
 
 void AudioWidget::dataLengthChanged(qint64 value)

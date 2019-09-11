@@ -9,7 +9,7 @@ Item {
     id: menuFiles
 
     // beurk !!!
-    height: 1080-50
+    height: 1080-100
     width: 1150
 
 

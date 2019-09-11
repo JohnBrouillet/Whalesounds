@@ -5,6 +5,7 @@ WaterfallWidget::WaterfallWidget()
 {
     plot = new QCustomPlot;
     fech = 44100;
+    ny = 1000;
     zoomX = false;
     zoomY = false;
     zoom(0,0);
@@ -21,10 +22,9 @@ WaterfallWidget::WaterfallWidget()
 void WaterfallWidget::setFech(int _fech)
 {
     fech = _fech;
-    int ny = 200;
-    int nx = int(maxFreqDisp * NFFT / fech);
+    nx = int(maxFreqDisp * NFFT / fech);
     colorMap->data()->setSize(nx, ny);
-    colorMap->data()->setRange(QCPRange(0, maxFreqDisp), QCPRange(0, 200));
+    colorMap->data()->setRange(QCPRange(0, maxFreqDisp), QCPRange(0, ny));
 }
 
 void WaterfallWidget::plotData(QVector<qreal> data)
@@ -133,10 +133,9 @@ void WaterfallWidget::plotDesign()
     plot->xAxis->setLabelColor(QColor("6b7b89"));
 
     colorMap = new QCPColorMap(plot->xAxis, plot->yAxis);
-    int ny = 200;
-    int nx = int(maxFreqDisp * NFFT / fech);
+    nx = int(maxFreqDisp * NFFT / fech);
     colorMap->data()->setSize(nx, ny);
-    colorMap->data()->setRange(QCPRange(0, maxFreqDisp), QCPRange(0, 200));
+    colorMap->data()->setRange(QCPRange(0, maxFreqDisp), QCPRange(ny/2, ny));
 
     colorScale = new QCPColorScale(plot);
     colorScale->setGradient(QCPColorGradient::gpThermal);

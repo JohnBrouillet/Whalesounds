@@ -30,6 +30,8 @@ private:
     QVector<double> xAxis;
 
     double fech;
+    int nx;
+    int ny;
     bool zoomX, zoomY;
 
 };

@@ -60,10 +60,12 @@ void PlayerControls::updateDurationInfo(qint64 currentInfo)
 }
 
 
-void PlayerControls::loadFiles(QStringList filenames)
+void PlayerControls::loadFiles(QString specie, QStringList filenames)
 {
    indexFile = 0;
    isLoaded = false;
+
+   specieLoaded = specie;
 
    filesPath.clear();
    foreach(const QString & file, filenames)
@@ -114,7 +116,9 @@ void PlayerControls::playClicked()
                     {
                         m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
                         updateDurationInfo(m_duration);
+
                         Q_EMIT newFech(m_engine->format().sampleRate());
+                        Q_EMIT specieLoadedSignal(specieLoaded);
 
                         m_engine->startPlayback();
                         isLoaded = true;
@@ -140,7 +144,6 @@ void PlayerControls::playClicked()
                 break;
         }
     }
-
 }
 
 void PlayerControls::previous()

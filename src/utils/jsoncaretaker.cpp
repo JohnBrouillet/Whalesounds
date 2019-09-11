@@ -62,7 +62,7 @@ void JsonCaretaker::getSoundsPath(QString species)
     foreach(const QVariant & s, soundsList)
         sounds << absPath + s.toString();
 
-    Q_EMIT soundsPath(sounds);
+    Q_EMIT soundsPath(species, sounds);
 }
 
 void JsonCaretaker::getCopyrights(QString species)

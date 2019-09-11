@@ -85,7 +85,7 @@ private:
 
 public Q_SLOTS:
     void setState(QAudio::Mode mode, QAudio::State state);
-    void loadFiles(QStringList filenames);
+    void loadFiles(QString specie, QStringList filenames);
     void updateDurationInfo(qint64 currentInfo);
     void next();
     void previous();
@@ -111,6 +111,7 @@ Q_SIGNALS:
     void newIndexFile(int indexFile, int nbfiles);
     void newState(bool state);
     void generatorBuffer(int i, QVector<double> data);
+    void specieLoadedSignal(QString);
 
 
 private:
@@ -118,8 +119,8 @@ private:
     BufferDecoderThread decoder;
     QAudio::State m_playerState = QAudio::State::StoppedState;
 
-
     QStringList filesPath;
+    QString specieLoaded;
     qint64 m_duration;
     int indexFile;
 

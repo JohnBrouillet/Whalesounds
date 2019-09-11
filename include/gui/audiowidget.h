@@ -2,7 +2,6 @@
 #define AUDIOWIDGET_H
 
 #include <QWidget>
-
 #include <QAudioBuffer>
 
 #include <cmath>
@@ -23,14 +22,15 @@ public Q_SLOTS:
     void dataLengthChanged(qint64 value);
     void getData(int serieIdx, QVector<double> data);
     void channelCountChanged(int value);
+    void setLoadedFileLabel(QString specie);
 
 private:
     void plotDesign();
 
 private:
     QCustomPlot* plot;
+    QCPTextElement* text;
     QVector<double> xAxis;
-
     int sampleCount;
     int channelCount;
     bool init;

@@ -36,7 +36,7 @@ private:
     void engineConnect();
 
 public Q_SLOTS:
-    void setFiles(QStringList path);
+    void setFiles(QString specie, QStringList path);
 
 private:
     PlayerControls * m_controls;
