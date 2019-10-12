@@ -13,7 +13,7 @@ public:
 
 public Q_SLOTS:
     void plotData(QVector<qreal> data);
-    void setFech(int _fech);
+    void setFech();
     void zoom(bool X, bool Y);
 
     void zoomActivation();

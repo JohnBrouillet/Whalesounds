@@ -1,4 +1,6 @@
 #include "include/utils/jsoncaretaker.h"
+#include "include/audio/track.h"
+
 
 JsonCaretaker::JsonCaretaker(QString path, QString abspath)
 {
@@ -43,10 +45,14 @@ QVariantList JsonCaretaker::getEspeces(QString family)
 
 void JsonCaretaker::sendPaths(QString species)
 {
-    Q_EMIT name(species);
+    Track::get()->setName(species);
+
     getImagePath(species);
     getSoundsPath(species);
     getCopyrights(species);
+    getDescription(species);
+
+    Q_EMIT newTrack();
 }
 
 void JsonCaretaker::getImagePath(QString species)
@@ -62,12 +68,17 @@ void JsonCaretaker::getSoundsPath(QString species)
     foreach(const QVariant & s, soundsList)
         sounds << absPath + s.toString();
 
-    Q_EMIT soundsPath(species, sounds);
+    Track::get()->setPaths(sounds);
 }
 
 void JsonCaretaker::getCopyrights(QString species)
 {
-    Q_EMIT copyrights(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["credits"].toString());
+    Track::get()->setCopyrights(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["credits"].toString());
+}
+
+void JsonCaretaker::getDescription(QString species)
+{
+    Track::get()->setDescription(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["description"].toString());
 }
 
 void JsonCaretaker::printKeyValues()

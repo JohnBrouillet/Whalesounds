@@ -1,4 +1,5 @@
 #include "include/gui/audiowidget.h"
+#include "include/audio/track.h"
 #define MSG(text) std::cout << text << std::endl;
 
 AudioWidget::AudioWidget()
@@ -25,9 +26,9 @@ AudioWidget::AudioWidget()
     setLayout(mainLayout);
 }
 
-void AudioWidget::setLoadedFileLabel(QString specie)
+void AudioWidget::setLoadedFileLabel()
 {
-    text->setText(specie);
+    text->setText(Track::get()->getName());
 }
 
 void AudioWidget::dataLengthChanged(qint64 value)

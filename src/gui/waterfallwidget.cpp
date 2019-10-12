@@ -1,5 +1,6 @@
 #include "include/gui/waterfallwidget.h"
 #include "include/audio/spectrum.h"
+#include "include/audio/track.h"
 
 WaterfallWidget::WaterfallWidget()
 {
@@ -19,9 +20,9 @@ WaterfallWidget::WaterfallWidget()
     setLayout(layout);
 }
 
-void WaterfallWidget::setFech(int _fech)
+void WaterfallWidget::setFech()
 {
-    fech = _fech;
+    fech = Track::get()->getFech();
     nx = int(maxFreqDisp * NFFT / fech);
     colorMap->data()->setSize(nx, ny);
     colorMap->data()->setRange(QCPRange(0, maxFreqDisp), QCPRange(0, ny));

@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <iostream>
 
+
 class JsonCaretaker : public QObject
 {
     Q_OBJECT
@@ -23,6 +24,7 @@ public:
     void getImagePath(QString species);
     void getSoundsPath(QString species);
     void getCopyrights(QString species);
+    void getDescription(QString species);
 
 public Q_SLOTS:
     void sendPaths(QString species);
@@ -36,6 +38,8 @@ Q_SIGNALS:
     void imagePath(QString _path);
     void name(QString _name);
     void copyrights(QString _copyrights);
+
+    void newTrack();
 
 
 private:

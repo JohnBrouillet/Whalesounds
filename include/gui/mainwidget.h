@@ -27,16 +27,13 @@
 
 class MainWidget : public QWidget
 {
-    Q_OBJECT
 
 public:
     MainWidget(QString path);
+    ~MainWidget();
 
 private:
     void engineConnect();
-
-public Q_SLOTS:
-    void setFiles(QString specie, QStringList path);
 
 private:
     PlayerControls * m_controls;

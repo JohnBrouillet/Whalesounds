@@ -20,18 +20,22 @@ class Spectrogram : public QObject
     Q_OBJECT
 public:
     Spectrogram();
+    ~Spectrogram();
 
 
 public Q_SLOTS:
     void computeFFT(int channel, QVector<double> data);
-    void setFech(int _fech);
+    void setFech();
 
 Q_SIGNALS:
     void dataReady(QVector<double>);
 
 private:
+    kiss_fft_cpx* cx_out;
+    kiss_fft_cfg cfg;
     Filter m_HPFilter;
     double fech;
+    int nbOutputData;
 
 };
 

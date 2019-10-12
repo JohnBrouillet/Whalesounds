@@ -265,11 +265,9 @@ Item {
                 font.pixelSize: Qt.application.font.pixelSize * 1.4
                 Connections{
                     target: jsoncare
-                    onName: { songNameLabel.text = _name }
+                    onNewTrack: { songNameLabel.text = track.getName(); }
                 }
             }
-
-
 
 
             Label
@@ -445,7 +443,7 @@ Item {
                 id: infoLabel
                 Connections{
                     target: jsoncare
-                    onCopyrights: { infoLabel.text = _copyrights;}
+                    onNewTrack: { infoLabel.text = track.getCopyrights();}
                 }
             }
 

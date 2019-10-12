@@ -18,7 +18,7 @@ TARGET = whalesounds
 TEMPLATE = app
 
 
-msvc: QMAKE_CXXFLAGS_RELEASE += /O2
+msvc: QMAKE_CXXFLAGS_RELEASE += /O2 /arch:AVX
 
 
 # The following define makes your compiler emit warnings if you use
@@ -68,6 +68,7 @@ HEADERS += \
     include/audio/playercontrols.h \
     include/audio/spectrum.h \
     include/audio/tonegenerator.h \
+    include/audio/track.h \
     include/audio/wavfile.h \
     include/gui/audiowidget.h \
     include/gui/mainwidget.h \
@@ -76,9 +77,6 @@ HEADERS += \
     include/processing/spectrogram.h \
     include/utils/jsoncaretaker.h \
     include/utils/utils.h
-
-
-
 
 
 CONFIG += mobility

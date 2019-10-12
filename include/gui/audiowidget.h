@@ -22,7 +22,7 @@ public Q_SLOTS:
     void dataLengthChanged(qint64 value);
     void getData(int serieIdx, QVector<double> data);
     void channelCountChanged(int value);
-    void setLoadedFileLabel(QString specie);
+    void setLoadedFileLabel();
 
 private:
     void plotDesign();

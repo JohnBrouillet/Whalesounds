@@ -1,4 +1,5 @@
 #include "include/audio/playercontrols.h"
+#include "include/audio/track.h"
 
 #include <QBoxLayout>
 #include <QSlider>
@@ -60,15 +61,15 @@ void PlayerControls::updateDurationInfo(qint64 currentInfo)
 }
 
 
-void PlayerControls::loadFiles(QString specie, QStringList filenames)
+void PlayerControls::loadFiles()
 {
    indexFile = 0;
    isLoaded = false;
 
-   specieLoaded = specie;
+   specieLoaded = Track::get()->getName();
 
    filesPath.clear();
-   foreach(const QString & file, filenames)
+   foreach(const QString & file, Track::get()->getPaths())
        filesPath.push_back(file);
 
    Q_EMIT newIndexFile(indexFile, filesPath.size());
@@ -86,16 +87,16 @@ void PlayerControls::setState(QAudio::Mode mode, QAudio::State state)
     if (state != m_playerState) {
         m_playerState = state;
         if(m_playerState == QAudio::State::ActiveState)
-            Q_EMIT newState(0);
+            Q_EMIT newState(PLAYING);
         else if(m_playerState == QAudio::State::SuspendedState)
-            Q_EMIT newState(1);
+            Q_EMIT newState(STOP);
         else if( m_playerState == QAudio::State::StoppedState )
         {
-            Q_EMIT newState(1);
+            Q_EMIT newState(STOP);
             isLoaded = false;
         }
         else
-            Q_EMIT newState(1);
+            Q_EMIT newState(STOP);
     }
 }
 
@@ -117,8 +118,9 @@ void PlayerControls::playClicked()
                         m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
                         updateDurationInfo(m_duration);
 
-                        Q_EMIT newFech(m_engine->format().sampleRate());
-                        Q_EMIT specieLoadedSignal(specieLoaded);
+                        Track::get()->setFech(m_engine->format().sampleRate());
+
+                        //Q_EMIT newFech(m_engine->format().sampleRate());
 
                         m_engine->startPlayback();
                         isLoaded = true;
@@ -126,11 +128,14 @@ void PlayerControls::playClicked()
                     else
                     {
                         Q_EMIT newText("Fichier introuvable");
-                        Q_EMIT newState(1);
+                        Q_EMIT newState(STOP);
                     }
+
+                    Q_EMIT newTrack();
+
                     break;
                 }
-                Q_EMIT newState(0);
+                Q_EMIT newState(PLAYING);
 
                 m_engine->startPlayback();
 
@@ -139,7 +144,7 @@ void PlayerControls::playClicked()
             case QAudio::State::ActiveState:
             {
                 m_engine->suspend();
-                Q_EMIT newState(1);
+                Q_EMIT newState(STOP);
             }
                 break;
         }

@@ -68,7 +68,11 @@
 //-----------------------------------------------------------------------------
 
 const qint64 BufferDurationUs       = 15000;
-const int    NotifyIntervalMs       = 2;
+#ifdef ANDROID
+const int    NotifyIntervalMs       = 50; // 2ms is too short for tablet app
+#else
+const int    NotifyIntervalMs       = 1;
+#endif
 
 // Size of the level calculation window in microseconds
 const int    LevelWindowUs          = 100 * 1000;

@@ -85,7 +85,7 @@ private:
 
 public Q_SLOTS:
     void setState(QAudio::Mode mode, QAudio::State state);
-    void loadFiles(QString specie, QStringList filenames);
+    void loadFiles();
     void updateDurationInfo(qint64 currentInfo);
     void next();
     void previous();
@@ -98,7 +98,7 @@ public Q_SLOTS:
 
 
 Q_SIGNALS:
-    void play();
+    void newTrack();
     void pause();
     void stop();
     void bufferToGo(int, QVector<double>);
@@ -115,6 +115,8 @@ Q_SIGNALS:
 
 
 private:
+    enum STATE {PLAYING, STOP};
+
     Engine * m_engine;
     BufferDecoderThread decoder;
     QAudio::State m_playerState = QAudio::State::StoppedState;
