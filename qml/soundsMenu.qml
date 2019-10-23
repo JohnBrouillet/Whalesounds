@@ -2,16 +2,13 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Imagine 2.3
-import "functions.js" as Func
-
+import QtQuick.Window 2.2
 
 Item {
     id: menuFiles
 
-    // beurk !!!
-    height: 540
-    width: 1150
-
+    height: Screen.height / 2
+    width: Screen.width / 2
 
     RowLayout
     {
