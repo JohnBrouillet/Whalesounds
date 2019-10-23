@@ -6,24 +6,19 @@
 #include <QGridLayout>
 #include <QSlider>
 #include <QLabel>
-#include <QMediaPlayer>
-#include <QMediaPlaylist>
 #include <QTime>
-#include <QAudioProbe>
-#include <QAudioDecoder>
+
 #include <QThread>
 #include <QQmlContext>
 #include <QPixmap>
 
 #include <QtQuickWidgets/QQuickWidget>
 
-#include "audiowidget.h"
-#include "waterfallwidget.h"
 #include "include/audio/playercontrols.h"
 #include "include/processing/spectrogram.h"
 #include "include/utils/jsoncaretaker.h"
-#include "include/audio/tonegenerator.h"
-
+#include "audiowidget.h"
+#include "spectrogramWidget.h"
 
 class MainWidget : public QWidget
 {
@@ -38,14 +33,14 @@ private:
 private:
     PlayerControls * m_controls;
     AudioWidget * m_audioWidget;
-    WaterfallWidget * m_waterfall;
+    SpectrogramWidget * m_spectro;
     Spectrogram m_spectrum;
-    QThread * spectroThread;
 
-    JsonCaretaker jsoncare;
-    QString dataAbsPath;
+    QThread * m_spectroThread;
 
-    WaveGenerator generator;
+    JsonCaretaker m_jsoncare;
+
+    QString m_dataAbsPath;
 
     qint64 m_duration;
 };

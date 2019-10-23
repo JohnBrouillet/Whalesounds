@@ -9,7 +9,7 @@ Item {
     id: menuFiles
 
     // beurk !!!
-    height: 1080-100
+    height: 540
     width: 1150
 
 
@@ -102,9 +102,6 @@ Item {
                         onClicked: {
                             jsoncare.sendPaths(model.speciesName);
                             animalItem.visible = true;
-                            generator.visible = false;
-                            freqActivator.visible = false;
-                            amplSlider.visible = false;
                         }
 
                     }
@@ -121,121 +118,12 @@ Item {
                     }
                 }
             }
-
-
-
         }
 
         ColumnLayout {
             spacing: 26
             Layout.preferredWidth: 50
             Layout.alignment: Qt.AlignHCenter
-
-            RowLayout{
-                id: generator
-                visible: false
-                spacing: 10
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-
-                Layout.maximumHeight: 170
-
-                Repeater {
-                    id: rep
-                    model: 5
-
-                    Slider {
-                        id: seekSlider
-                        value: 440
-                        orientation: Qt.Vertical
-                        height:  120
-                        from: 0
-                        to: 1000
-                        enabled: index == 0 ? true : false
-                        stepSize: 1
-                        Layout.fillHeight: false
-                        Layout.preferredHeight: 140
-
-                        ToolTip {
-                            parent: seekSlider.handle
-                            visible: seekSlider.pressed
-                            text: value + " Hz"
-                            y: parent.height
-                            readonly property int value: seekSlider.valueAt(seekSlider.position)
-                        }
-
-                        onValueChanged: wavegenerator.generate(Func.generateWave());
-                    }
-                }
-            }
-
-            RowLayout{
-                id: amplSlider
-                visible: false
-                spacing: 10
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-                Layout.preferredHeight: 50
-
-                Repeater {
-                    id: amplRep
-                    model: 5
-
-                    Slider {
-                        id: ampli
-                        value: index == 0 ? 10 : 1
-                        orientation: Qt.Vertical
-                        height: 10
-                        from: 0
-                        to: 10
-                        enabled: index == 0 ? true : false
-                        stepSize: 1
-                        Layout.fillHeight: false
-                        Layout.preferredHeight: 50
-
-                        ToolTip {
-                            parent: ampli.handle
-                            visible: ampli.pressed
-                            text: (value*0.1).toFixed(1)
-                            y: parent.height
-                            readonly property int value: ampli.valueAt(ampli.position)
-                        }
-
-                        onValueChanged: wavegenerator.generate(Func.generateWave());
-                    }
-                }
-            }
-
-
-            RowLayout{
-                id: freqActivator
-                visible: false
-                spacing: 10
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                Layout.maximumHeight: 170
-
-                Repeater {
-                    id: freqRepeat
-                    model: 5
-
-                    CheckBox {
-                        id: freqCheck
-                        checked: index == 0 ? true : false
-                        onCheckedChanged: {
-                            rep.itemAt(index).enabled = freqCheck.checkState;
-                            amplRep.itemAt(index).enabled = freqCheck.checkState;
-                            wavegenerator.generate(Func.generateWave());
-                        }
-                    }
-                }
-            }
-
-
 
             Item {
                 id: animalItem
@@ -250,8 +138,13 @@ Item {
                         target: jsoncare
                         onImagePath:{
                             animal.source = 'file:///' + _path;
-
                        }
+                    }
+
+                    MouseArea
+                    {
+                        anchors.fill: parent
+                        onClicked: zoomPix.visible = true;
                     }
                 }
             }
@@ -270,14 +163,33 @@ Item {
             }
 
 
-            Label
+            RowLayout
             {
+                spacing: 8
                 Layout.alignment: Qt.AlignHCenter
-                id: timelabel
-                text: "00/00"
-                Connections{
-                    target: playercontrols
-                    onNewTime: { timelabel.text = time;}
+
+                Slider {
+                    id: timeSlider
+                    from: 0.0
+                    stepSize: 0.1
+                    Connections{
+                        target: playercontrols
+                        onNewDuration: timeSlider.to = value;
+                        onNewPosition: timeSlider.value = value;
+                    }
+
+                    onMoved: playercontrols.seek(timeSlider.value);
+
+                }
+
+                Label
+                {
+                    id: timelabel
+                    text: "00/00"
+                    Connections{
+                        target: playercontrols
+                        onNewTime: { timelabel.text = time;}
+                    }
                 }
             }
 
@@ -357,12 +269,42 @@ Item {
                 }
             }
 
+            Button{
+                id: controlVisibility
+                Layout.alignment: Qt.AlignHCenter
+                onClicked: control.visible = !control.visible
+                text: "Configuration"
+            }
+
+        }
+
+        ColumnLayout{
+            id: control
+            visible: false
             GridLayout{
+
                 id: spectroControl
                 Layout.alignment: Qt.AlignHCenter
 
-                columns: 6
+                columns:  3
 
+///////////////////
+                Label{
+                    horizontalAlignment: Label.Center
+                    text: "Vitesse \n de lecture"
+                }
+
+                ComboBox{
+                    id: rate
+                    Layout.preferredWidth: 90
+                    model : ["x0.25", "x0.5", "x0.75", "x1", "x1.25", "x1.5", "x1.75", "x2" ]
+                    currentIndex: 3
+                    onActivated: playercontrols.changeRate(rate.currentIndex);
+                    Layout.columnSpan: 2
+                }
+
+
+///////////////////
                 Label{
                     text: "Zoom horizontal"
                 }
@@ -370,7 +312,10 @@ Item {
                 CheckBox{
                     id: checkX
                     visible: true
-                    onCheckedChanged: waterfall.zoom(checkX.checkState, checkY.checkState)
+                    onCheckedChanged: {
+                        spectrogram.zoom(checkX.checkState, checkY.checkState);
+                        audiograph.zoom(checkX.checkState, checkY.checkState);
+                    }
                 }
 
                 Button{
@@ -378,35 +323,22 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: waterfall.zoomSpectro(1)
+                    onClicked:{
+                        spectrogram.zoomSpectro(1);
+                        if(!checkY.checkState) audiograph.zoomSpectro(1);
+                    }
                 }
-
-                Label{
-                    text: "Echelle \n colorimétrique"
-                    horizontalAlignment: Label.Center
-                    Layout.rowSpan: 2
-                }
-
-                Button{
-                    icon.name: "plus"
-                    icon.width: 32
-                    icon.height: 32
-
-                    onClicked: waterfall.changeColorRange(1)
-                }
-
-                Label{
-                    text: "Réinitialisation \n échelle"
-                    horizontalAlignment: Label.Center
-                }
-
+////////////////////
                 Label{
                     text: "Zoom vertical"
                 }
 
                 CheckBox{
                     id: checkY
-                    onCheckedChanged: waterfall.zoom(checkX.checkState, checkY.checkState)
+                    onCheckedChanged: {
+                        spectrogram.zoom(checkX.checkState, checkY.checkState);
+                        audiograph.zoom(checkX.checkState, checkY.checkState);
+                    }
                 }
 
                 Button{
@@ -414,15 +346,40 @@ Item {
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: waterfall.zoomSpectro(0)
+                    onClicked: {
+                        spectrogram.zoomSpectro(0);
+                        if(!checkY.checkState) audiograph.zoomSpectro(0);
+                    }
                 }
+////////////////////
+
+                Label{
+                    text: "Echelle \n colorimétrique"
+                    horizontalAlignment: Label.Center
+                }
+
+                Button{
+                    icon.name: "plus"
+                    icon.width: 32
+                    icon.height: 32
+
+                    onClicked: spectrogram.changeColorRange(1)
+                }
+
 
                 Button{
                     icon.name: "moins"
                     icon.width: 32
                     icon.height: 32
 
-                    onClicked: waterfall.changeColorRange(0)
+                    onClicked: spectrogram.changeColorRange(0)
+                }
+
+////////////////////
+
+                Label{
+                    text: "Réinitialisation \n échelle"
+                    horizontalAlignment: Label.Center
                 }
 
                 Button{
@@ -431,10 +388,76 @@ Item {
                     icon.height: 32
 
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: waterfall.reinit();
+                    onClicked: spectrogram.reinit();
+                    Layout.columnSpan: 2
                 }
 
+                Label{
+                    text: "Couleur"
+                    horizontalAlignment: Label.Center
+                }
 
+                ComboBox{
+                    id: colorGradientChoices
+                    model: ["Grayscale", "Hot", "Cold", "Night", "Candy", "Geography", "Ion", "Thermal", "Polar", "Spectrum", "Jet", "Hues"]
+                    currentIndex: 8
+                    onActivated: spectrogram.changeColor(colorGradientChoices.currentIndex);
+                    Layout.columnSpan: 2
+                }
+
+ ////////////////////
+                Button{
+                    text: "Inverser les couleurs"
+
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: spectrogram.reverseColor();
+                    Layout.columnSpan: 3
+                }
+
+            }
+        }
+    }
+
+    Item{
+        id: zoomPix
+        width: parent.width
+        height: parent.height
+        visible: false
+
+        Rectangle{
+            anchors.fill: parent
+            color: "white"
+            opacity: 0.9
+        }
+
+        MouseArea{
+            anchors.fill: parent
+            onClicked: zoomPix.visible = false
+        }
+
+        ColumnLayout{
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.alignment: Qt.AlignHCenter
+
+            Image {
+                id: animalZoom
+                Layout.alignment: Qt.AlignHCenter
+                sourceSize.width: menuFiles.width / 2
+                sourceSize.height: menuFiles.height / 2
+                source: animal.source
+            }
+
+            Label{
+                id: description
+                Layout.alignment: Qt.AlignHCenter
+                wrapMode: Text.WordWrap
+                lineHeight: 3
+                font.pixelSize: Qt.application.font.pixelSize
+                Connections{
+                    target: jsoncare
+                    onNewTrack: { description.text = track.getDescription(); }
+                }
             }
 
             Label
@@ -446,10 +469,9 @@ Item {
                     onNewTrack: { infoLabel.text = track.getCopyrights();}
                 }
             }
-
-
         }
     }
+
 }
 
 

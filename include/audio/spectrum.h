@@ -89,8 +89,8 @@ const int   NullMessageTimeout      = -1;
 
 
 const int NFFT = 2*2048;
-const int maxFreqDisp = 15000;
-
+const int maxFreqDisp = 22050;
+const double temporalResolution = 0.01; //10ms
 
 //-----------------------------------------------------------------------------
 // Types and data structures

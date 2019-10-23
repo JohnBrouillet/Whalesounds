@@ -4,7 +4,7 @@
 
 JsonCaretaker::JsonCaretaker(QString path, QString abspath)
 {
-    absPath = abspath;
+    m_absPath = abspath;
 
     QFile file;
     file.setFileName(path);
@@ -23,10 +23,10 @@ void JsonCaretaker::setSpecies()
     {
         QJsonObject species = m_species.value(family).toObject();
 
-        famille.push_back(family);
+        m_famille.push_back(family);
         foreach(const QString & _species, species.keys())
         {
-            espece.push_back(_species);
+            m_espece.push_back(_species);
             m_speciesByFamily.insert(family, _species);
         }
     }
@@ -57,7 +57,7 @@ void JsonCaretaker::sendPaths(QString species)
 
 void JsonCaretaker::getImagePath(QString species)
 {
-    Q_EMIT imagePath(absPath + m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["image"].toString());
+    Q_EMIT imagePath(m_absPath + m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["image"].toString());
 }
 
 void JsonCaretaker::getSoundsPath(QString species)
@@ -66,7 +66,7 @@ void JsonCaretaker::getSoundsPath(QString species)
 
     QStringList sounds;
     foreach(const QVariant & s, soundsList)
-        sounds << absPath + s.toString();
+        sounds << m_absPath + s.toString();
 
     Track::get()->setPaths(sounds);
 }

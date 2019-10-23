@@ -51,6 +51,97 @@
 #include <QAudioFormat>
 #include "include/utils/utils.h"
 
+void getBufferLevels(const QByteArray & buffer, int channels, qreal peak, QVector<QVector<qreal>>& datas)
+{
+    const qint16* data = reinterpret_cast<const qint16*>(buffer.constData());
+
+    // le buffer contient des éléments sur 8 octets. En les castant sur 16 octets, son nombre de cases est divisé par 2.
+    for (int i = 0; i < buffer.size() / (2*channels); i++, data += channels)
+    {
+        datas[0].push_back(pcmToReal(*data));
+    }
+
+}
+
+qreal getPeakValue(const QAudioFormat& format)
+{
+    // Note: Only the most common sample formats are supported
+    if (!format.isValid())
+        return qreal(0);
+
+    if (format.codec() != "audio/pcm")
+        return qreal(0);
+
+    switch (format.sampleType()) {
+    case QAudioFormat::Unknown:
+        break;
+    case QAudioFormat::Float:
+        if (format.sampleSize() != 32) // other sample formats are not supported
+            return qreal(0);
+        return qreal(1.00003);
+    case QAudioFormat::SignedInt:
+        if (format.sampleSize() == 32)
+            return qreal(INT_MAX);
+        if (format.sampleSize() == 16)
+            return qreal(SHRT_MAX);
+        if (format.sampleSize() == 8)
+            return qreal(CHAR_MAX);
+        break;
+    case QAudioFormat::UnSignedInt:
+        if (format.sampleSize() == 32)
+            return qreal(UINT_MAX);
+        if (format.sampleSize() == 16)
+            return qreal(USHRT_MAX);
+        if (format.sampleSize() == 8)
+            return qreal(UCHAR_MAX);
+        break;
+    }
+
+    return qreal(0);
+}
+
+void getBufferLevels(const QAudioFormat & format, const QByteArray & buffer, QVector<QVector<qreal>>& values)
+{
+
+    int channelCount = format.channelCount();
+
+    qreal peak = getPeakValue(format);
+
+    switch (format.sampleType())
+    {
+        case QAudioFormat::Unknown:
+        case QAudioFormat::UnSignedInt:
+            if (format.sampleSize() == 32)
+                getBufferLevels(buffer, channelCount, peak, values);
+            if (format.sampleSize() == 16)
+                getBufferLevels(buffer, channelCount, peak, values);
+            if (format.sampleSize() == 8)
+                getBufferLevels(buffer, channelCount, peak, values);
+            /*for (int i = 0; i < values.size(); ++i)
+                values[i] = qAbs(values.at(i) - peak_value / 2) / (peak_value / 2);*/
+            break;
+        case QAudioFormat::Float:
+            if (format.sampleSize() == 32) {
+                getBufferLevels(buffer, channelCount, peak, values);
+               /* for (int i = 0; i < values.size(); ++i)
+                    values[i] /= peak_value;*/
+            }
+            break;
+        case QAudioFormat::SignedInt:
+            if (format.sampleSize() == 32)
+                getBufferLevels(buffer, channelCount, peak, values);
+            if (format.sampleSize() == 16)
+                getBufferLevels(buffer, channelCount, peak, values);
+            if (format.sampleSize() == 8)
+                getBufferLevels(buffer, channelCount, peak, values);
+           /* for (int i = 0; i < values.size(); ++i)
+                values[i] /= peak_value;*/
+            break;
+    }
+
+}
+
+
 qint64 audioDuration(const QAudioFormat &format, qint64 bytes)
 {
     return (bytes * 1000000) /

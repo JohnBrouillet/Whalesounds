@@ -1,133 +1,68 @@
 #include "include/gui/audiowidget.h"
+#include "include/utils/utils.h"
 #include "include/audio/track.h"
-#define MSG(text) std::cout << text << std::endl;
 
 AudioWidget::AudioWidget()
 {
-    init = false;
-    sampleCount = 2000;
-    channelCount = 2;
-    for(int i = 0; i < sampleCount; i++)
-        xAxis.push_back(i);
+    m_title = new QCPTextElement(m_plot, "", QFont("helvetica", 11, QFont::Normal));
+    m_plot->plotLayout()->insertRow(0);
+    m_title->setTextColor(QColor(102,108,118));
+    m_plot->plotLayout()->addElement(0, 0, m_title);
 
-    plot = new QCustomPlot;
+    design();
+}
 
-    plot->plotLayout()->insertRow(0);
-    text = new QCPTextElement(plot, "", QFont("helvetica", 11, QFont::Normal));
-    text->setTextColor(QColor(102,108,118));
-    plot->plotLayout()->addElement(0, 0, text);
+void AudioWidget::updateGraph()
+{
+    QVector<QVector<qreal>> data = Track::get()->getData();
+    QAudioFormat format = Track::get()->getFormat();
 
-    plot->addGraph();
+    double resolution = double(1.0/format.sampleRate());
 
-    plotDesign();
+    m_plot->graph(0)->data()->clear();
+    for(int i = 0; i < data[0].size(); i++)
+        m_plot->graph(0)->addData(i*resolution, data[0][i]);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(plot);
-    setLayout(mainLayout);
+    m_plot->xAxis->setRange(0, data[0].size()*resolution);
+
+    m_plot->replot();
 }
 
 void AudioWidget::setLoadedFileLabel()
 {
-    text->setText(Track::get()->getName());
+    m_title->setText(Track::get()->getName());
 }
 
-void AudioWidget::dataLengthChanged(qint64 value)
+void AudioWidget::design()
 {
-    sampleCount = value / (2*channelCount);
+    m_plot->setInteractions(QCP::iRangeZoom);
+    m_plot->axisRect()->setRangeZoom(Qt::Horizontal);
 
-    xAxis.clear();
-    for(int i = 0; i < sampleCount; i++)
-        xAxis.push_back(i);
-
-   plot->xAxis->setRange(0, sampleCount);
-}
-
-void AudioWidget::channelCountChanged(int value)
-{
-    channelCount = value;
-}
-
-void AudioWidget::getBuffer(const QAudioBuffer &buffer)
-{
-    if(!init)
-    {
-        for(int i = 0; i < buffer.format().channelCount(); i++)
-        {
-            plot->addGraph();
-        }
-
-        init = true;
-    }
-
-}
-
-void AudioWidget::getData(int serieIdx, QVector<double> data)
-{
-    if(xAxis.size() != data.size())
-        dataLengthChanged(data.size() * 2 * channelCount);
-
-    plot->graph(serieIdx)->setData(xAxis, data);
-    plot->replot();
-}
-
-void AudioWidget::plotDesign()
-{
-
-    plot->setInteractions(QCP::iRangeZoom);
-    plot->axisRect()->setRangeZoom(Qt::Horizontal);
-
-
-    plot->xAxis->setBasePen(QPen(QColor("6b7b89"), 1));
-    plot->yAxis->setBasePen(QPen(QColor("6b7b89"), 1));
-
+    m_plot->xAxis->setBasePen(QPen(QColor("6b7b89"), 1));
+    m_plot->yAxis->setBasePen(QPen(QColor("6b7b89"), 1));
 
     QSharedPointer<QCPAxisTicker> xticker(new QCPAxisTicker);
     xticker->setTickCount(1);
-    plot->yAxis->setTicker(xticker);
+    m_plot->yAxis->setTicker(xticker);
 
+    m_plot->yAxis->setTickPen(QPen(QColor("6b7b89"), 1));
+    m_plot->yAxis->setSubTickPen(QPen(QColor("6b7b89"), 1));
+    m_plot->xAxis->setTickLabelColor(QColor("6b7b89"));
+    m_plot->yAxis->setTickLabelColor(QColor("6b7b89"));
+    m_plot->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::SolidLine));
+    m_plot->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::SolidLine));
+    m_plot->xAxis->grid()->setSubGridVisible(false);
+    m_plot->yAxis->grid()->setSubGridVisible(false);
+    m_plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+    m_plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
 
-   // plot->xAxis->setTickPen(QPen(QColor("6b7b89"), 1));
-    plot->yAxis->setTickPen(QPen(QColor("6b7b89"), 1));
-    //plot->xAxis->setSubTickPen(QPen(QColor("6b7b89"), 1));
-    plot->yAxis->setSubTickPen(QPen(QColor("6b7b89"), 1));
-    plot->xAxis->setTickLabelColor(QColor("6b7b89"));
-    plot->yAxis->setTickLabelColor(QColor("6b7b89"));
-   // plot->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::SolidLine));
-    plot->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::SolidLine));
-   // plot->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::SolidLine));
-    plot->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::SolidLine));
-    plot->xAxis->grid()->setSubGridVisible(false);
-    plot->yAxis->grid()->setSubGridVisible(false);
-    plot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
-    plot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+    m_plot->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    m_plot->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
 
-    plot->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    plot->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    m_plot->yAxis->setLabel("Audio level");
+    m_plot->yAxis->setLabelColor(QColor("6b7b89"));
+    m_plot->yAxis->setRange(-0.7 , 0.7);
 
-    QLinearGradient plotGradient;
-    plotGradient.setStart(0, 0);
-    plotGradient.setFinalStop(0, 350);
-    plotGradient.setColorAt(0, QColor("#fefefe"));
-    plotGradient.setColorAt(1, QColor("#f0f2f5"));
-    plot->setBackground(QBrush(QColor("#dfe4ea")));
-
-    QLinearGradient axisRectGradient;
-    axisRectGradient.setStart(0, 0);
-    axisRectGradient.setFinalStop(0, 350);
-    axisRectGradient.setColorAt(0, QColor(255, 255, 255));
-    axisRectGradient.setColorAt(1, QColor("#dfe4ea"));
-    plot->axisRect()->setBackground(QColor("#ffffff"));
-
-
-    plot->xAxis->setLabel("Audio samples");
-    plot->xAxis->setLabelColor(QColor("6b7b89"));
-    plot->xAxis->setRange(0, sampleCount);
-
-    plot->yAxis->setLabel("Audio level");
-    plot->yAxis->setLabelColor(QColor("6b7b89"));
-    plot->yAxis->setRange(-0.7 , 0.7);
-
-    plot->graph(0)->setPen(QColor("#66DEFF"));
-
-
+    m_plot->graph(0)->setPen(QColor("#66DEFF"));
 }
+

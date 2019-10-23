@@ -28,7 +28,7 @@ public:
 
 public Q_SLOTS:
     void sendPaths(QString species);
-    QVariantList getFamily(){ return famille; }
+    QVariantList getFamily(){ return m_famille; }
     QVariantList getEspeces(QString family);
 
 Q_SIGNALS:
@@ -47,10 +47,10 @@ private:
     QJsonObject m_species;
 
     QMultiMap<QString, QString> m_speciesByFamily;
-    QVariantList famille;
-    QVariantList espece;
+    QVariantList m_famille;
+    QVariantList m_espece;
 
-    QString absPath;
+    QString m_absPath;
 };
 
 #endif // JSONCARETAKER_H

@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <QByteArray>
+#include <QAudioFormat>
 #include <QObject>
 
 class Track : public QObject
@@ -25,66 +27,28 @@ public:
     }
 
 public Q_SLOTS:
-    int getFech()
-    {
-        return m_fech;
-    }
-
-    void setFech(int fech)
-    {
-        m_fech = fech;
-    }
-
-    QStringList getPaths()
-    {
-        return m_pathList;
-    }
-
-    void setPaths(QStringList& paths)
-    {
-        m_pathList = paths;
-    }
-
-    QString getName()
-    {
-        return m_name;
-    }
-
-    void setName(QString name)
-    {
-        m_name = name;
-    }
-
-    QString getDescription()
-    {
-        return m_description;
-    }
-
-    void setDescription(QString description)
-    {
-        m_description = description;
-    }
-
-    QString getCopyrights()
-    {
-        return m_copyrights;
-    }
-
-    void setCopyrights(QString copyrights)
-    {
-        m_copyrights = copyrights;
-    }
+    QStringList getPaths();
+    void setPaths(QStringList& paths);
+    QString getName();
+    void setName(QString name);
+    QString getDescription();
+    void setDescription(QString description);
+    QString getCopyrights();
+    void setCopyrights(QString copyrights);
+    QVector<QVector<qreal>> getData();
+    void setData(QByteArray& data);
+    QAudioFormat getFormat();
+    void setFormat(QAudioFormat format);
 
 private:
-
     static Track* m_trackInstance;
 
-
+    QVector<QVector<qreal>> m_data;
+    QAudioFormat m_format;
     QStringList m_pathList;
     QString m_name;
     QString m_description;
     QString m_copyrights;
-    int m_fech;
 };
 
 #endif // TRACK_H

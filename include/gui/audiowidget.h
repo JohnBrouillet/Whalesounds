@@ -1,39 +1,26 @@
 #ifndef AUDIOWIDGET_H
 #define AUDIOWIDGET_H
 
-#include <QWidget>
-#include <QAudioBuffer>
-
-#include <cmath>
-#include <iostream>
-
+#include "include/gui/abstractPlot.h"
 #include "3rdparties/qcustomplot/qcustomplot.h"
 
-class AudioWidget : public QWidget
+class AudioWidget : public AbstractPlot
 {
     Q_OBJECT
 
 public:
     AudioWidget();
 
-    void getBuffer(const QAudioBuffer &buffer);
-
 public Q_SLOTS:
-    void dataLengthChanged(qint64 value);
-    void getData(int serieIdx, QVector<double> data);
-    void channelCountChanged(int value);
+    void updateGraph();
     void setLoadedFileLabel();
 
 private:
-    void plotDesign();
+    void design();
 
 private:
-    QCustomPlot* plot;
-    QCPTextElement* text;
-    QVector<double> xAxis;
-    int sampleCount;
-    int channelCount;
-    bool init;
+    QCPTextElement* m_title;
+
 };
 
 #endif // AUDIOWIDGET_H

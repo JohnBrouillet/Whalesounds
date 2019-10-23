@@ -2,45 +2,55 @@
 #include "include/audio/spectrum.h"
 #include "include/audio/track.h"
 
+#include <QVector>
+#include <numeric>
+#include <iostream>
 
-
-Spectrogram::Spectrogram() : m_HPFilter(HPF, 51, 44.1, 0.3)
+Spectrogram::Spectrogram()
 {
-    cx_out = new kiss_fft_cpx[NFFT];
-    cfg = kiss_fft_alloc(NFFT, 0, 0, 0);
+    m_transformer.setSize(NFFT);
+    m_transformer.setWindowFunction("Hamming");
 }
 
-Spectrogram::~Spectrogram()
+void Spectrogram::fft(QVector<double> data)
 {
-    delete[] cx_out;
-}
-
-void Spectrogram::computeFFT(int channel, QVector<double> data)
-{
-    QVector<double> out(nbOutputData, 0);
-
-    int chunkSize = data.size();
-
-    kiss_fft_cpx* cx_in = new kiss_fft_cpx[chunkSize];
-
-    for(int i = 0; i < chunkSize; i++)
+    int nbData = data.size();
+    if(nbData < NFFT)
     {
-        cx_in[i].r = data[i] * 0.5 * (1 - std::cos((2 * M_PI * i) / (NFFT - 1)));
-        cx_in[i].i = 0;       
+        for(int i = 0; i < NFFT - nbData; i++)
+            data.push_back(0.0);
     }
 
-    kiss_fft( cfg , cx_in , cx_out );
+    double fft[NFFT];
 
-    for(int d = 0; d < nbOutputData; d++)
-            out[d] += (std::abs(cx_out[d].r));
+    m_transformer.forwardTransform(data.data(), fft);
 
-    delete[] cx_in;
-    emit dataReady(out);
+    for(int i = 0; i < NFFT / 2; i++)
+        m_out.push_back(20*std::abs(std::log(std::abs(fft[i]) * 1e6)));
 }
 
-void Spectrogram::setFech()
+void Spectrogram::computeFFT()
 {
-    fech = double(Track::get()->getFech());
-    nbOutputData = int(maxFreqDisp * NFFT / fech);
-    m_HPFilter = Filter(HPF, 51, fech*0.001, 0.3);
+    m_out.clear();
+    std::vector<qreal> data = Track::get()->getData()[0].toStdVector();
+    double overlapPerc = 0.5;
+
+    int chunkSize = temporalResolution * Track::get()->getFormat().sampleRate();
+    int overlap = chunkSize * overlapPerc;
+
+    std::vector<qreal> tmp(data.begin(), data.begin() + chunkSize);
+    QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
+
+    fft(buf);
+
+    for(int i = 1; i < (data.size() / chunkSize); i++)
+    {
+        int n = i * chunkSize;
+
+        std::vector<qreal> tmp(data.begin() + n - overlap, data.begin() + n + chunkSize);
+        QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
+
+        fft(buf);
+    }
+    emit dataReady(m_out);
 }
