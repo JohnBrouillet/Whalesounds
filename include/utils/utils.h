@@ -81,6 +81,11 @@ bool isPCMS16LE(const QAudioFormat &format);
 
 // Compile-time calculation of powers of two
 
+void getBufferLevels(const QByteArray & buffer, int channels, qreal peak, QVector<QVector<qreal>>& datas);
+qreal getPeakValue(const QAudioFormat& format);
+void getBufferLevels(const QAudioFormat & format, const QByteArray & buffer, QVector<QVector<qreal>>& values);
+
+
 template<int N> class PowerOfTwo
 { public: static const int Result = PowerOfTwo<N-1>::Result * 2; };
 

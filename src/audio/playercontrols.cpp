@@ -1,52 +1,39 @@
 #include "include/audio/playercontrols.h"
-
-#include <QBoxLayout>
-#include <QSlider>
-#include <QStyle>
-#include <QToolButton>
-#include <QComboBox>
-#include <QAudio>
+#include "include/audio/track.h"
+#include "include/audio/wavfile.h"
 
 PlayerControls::PlayerControls(QWidget *parent)
-    : QWidget(parent), m_engine(new Engine)
+    : QWidget(parent)
 {
-    indexFile = 0;
-    isLoaded = false;
-    engineConnect();
+    m_isLoaded = false;
 
-    QThread* decoderThread = new QThread;
-    decoder.moveToThread(decoderThread);
-    qRegisterMetaType<QVector<QPointF>>("QVector<double>");
-    decoderThread->start();
+    m_player = new QMediaPlayer(this);
+    m_player->setAudioRole(QAudio::MusicRole);
+    m_playlist = new QMediaPlaylist;
+    m_player->setPlaylist(m_playlist);
+
+#ifdef ANDROID
+    m_player->setNotifyInterval(100);
+#else
+    m_player->setNotifyInterval(10);
+#endif
+
+    connect(m_player, &QMediaPlayer::durationChanged, this, &PlayerControls::durationChanged);
+    connect(m_player, &QMediaPlayer::positionChanged, this, &PlayerControls::updateDurationInfo);
+    connect(m_player, &QMediaPlayer::stateChanged, this, &PlayerControls::setState);
+    connect(m_playlist, &QMediaPlaylist::currentIndexChanged, this, &PlayerControls::playlistPositionChanged);
 }
 
-void PlayerControls::engineConnect()
+void PlayerControls::durationChanged(qint64 duration)
 {
-    connect(m_engine, &Engine::stateChanged, this, &PlayerControls::setState);
-    connect(m_engine, &Engine::bufferChanged, &decoder, &BufferDecoderThread::getBuffer);
-    connect(m_engine, &Engine::formatChanged, &decoder, &BufferDecoderThread::formatChanged);
-    connect(&decoder, &BufferDecoderThread::bufferReady, this, &PlayerControls::bufferToGo);
-    connect(m_engine, &Engine::dataLengthChanged, &decoder, &BufferDecoderThread::dataLengthChanged);
-    connect(m_engine, &Engine::dataLengthChanged, this, &PlayerControls::dataLengthChanged);
-    connect(m_engine, &Engine::channelCountChanged, this, &PlayerControls::channelCountChanged);
-    connect(m_engine, &Engine::channelCountChanged, &decoder, &BufferDecoderThread::channelCountChanged);
-
-    connect(m_engine, &Engine::playPositionChanged, this, &PlayerControls::updateDurationInfo);
-
-    connect(m_engine, &Engine::errorMessage, [&](const QString& heading, const QString & detail){
-        qDebug() << "heading " << heading;
-        qDebug() << "detail " << detail;
-    });
-
-    connect(this, &PlayerControls::generatorBuffer, m_engine, &Engine::setGeneratorBuffer);
+    m_duration = duration / 1000;
+    Q_EMIT newDuration(m_duration);
 }
-
-
 
 void PlayerControls::updateDurationInfo(qint64 currentInfo)
 {
-    QString tStr;
-    qint64 time = audioDuration(m_engine->format(), currentInfo)*1e-6;
+    QString timeString;
+    qint64 time = currentInfo / 1000;
     if (currentInfo || m_duration)
     {
         QTime currentTime((time / 3600) % 60, (time / 60) % 60, time % 60, (time * 1000) % 1000);
@@ -54,92 +41,91 @@ void PlayerControls::updateDurationInfo(qint64 currentInfo)
         QString format = "mm:ss";
         if (m_duration > 3600)
             format = "hh:mm:ss";
-        tStr = currentTime.toString(format) + " / " + totalTime.toString(format);
+        timeString = currentTime.toString(format) + " / " + totalTime.toString(format);
     }
-    Q_EMIT newTime(tStr);
+    else
+        timeString = "00/00";
+    Q_EMIT newTime(timeString);
+    Q_EMIT newPosition(currentInfo / 1000.0);
 }
 
-
-void PlayerControls::loadFiles(QString specie, QStringList filenames)
+static bool isPlaylist(const QUrl &url)
 {
-   indexFile = 0;
-   isLoaded = false;
+    if (!url.isLocalFile())
+        return false;
+    const QFileInfo fileInfo(url.toLocalFile());
+    return fileInfo.exists() && !fileInfo.suffix().compare(QLatin1String("m3u"), Qt::CaseInsensitive);
+}
 
-   specieLoaded = specie;
+void PlayerControls::loadFiles()
+{
+   m_isLoaded = false;
 
-   filesPath.clear();
-   foreach(const QString & file, filenames)
-       filesPath.push_back(file);
+   m_playlist->clear();
+   foreach(const QString & file, Track::get()->getPaths())
+   {
+#ifdef ANDROID
+       QUrl url = QUrl("file://"+file);
+#else
+       QUrl url = QUrl(file);
+#endif
+       if (isPlaylist(url))
+           m_playlist->load(url);
+       else
+           m_playlist->addMedia(url);
+    }
 
-   Q_EMIT newIndexFile(indexFile, filesPath.size());
+   Q_EMIT newIndexFile(0, m_playlist->mediaCount());
    Q_EMIT newFiles();
 }
 
-QAudio::State PlayerControls::state() const
+QMediaPlayer::State PlayerControls::state() const
 {
     return m_playerState;
 }
 
-void PlayerControls::setState(QAudio::Mode mode, QAudio::State state)
+void PlayerControls::setState(QMediaPlayer::State state)
 {
-    Q_UNUSED(mode);
     if (state != m_playerState) {
         m_playerState = state;
-        if(m_playerState == QAudio::State::ActiveState)
-            Q_EMIT newState(0);
-        else if(m_playerState == QAudio::State::SuspendedState)
-            Q_EMIT newState(1);
-        else if( m_playerState == QAudio::State::StoppedState )
+        if(m_playerState ==  QMediaPlayer::PlayingState)
+            Q_EMIT newState(PLAYING);
+        else if(m_playerState ==  QMediaPlayer::PausedState)
+            Q_EMIT newState(STOP);
+        else if( m_playerState == QMediaPlayer::StoppedState )
         {
-            Q_EMIT newState(1);
-            isLoaded = false;
+            Q_EMIT newState(STOP);
+            m_isLoaded = false;
         }
         else
-            Q_EMIT newState(1);
+            Q_EMIT newState(STOP);
     }
 }
 
 
 void PlayerControls::playClicked()
 {
-    if(filesPath.size())
+    if(m_playlist->mediaCount())
     {
         switch (m_playerState)
         {
-            case QAudio::State::StoppedState:
-            case QAudio::State::SuspendedState:
+            case QMediaPlayer::StoppedState:
+            case QMediaPlayer::PausedState:
             {
-                if(!isLoaded)
+                if(!m_isLoaded)
                 {
-                    m_engine->reset();
-                    if(m_engine->loadFile(filesPath[indexFile]))
-                    {
-                        m_duration = audioDuration(m_engine->format(), m_engine->bufferLength())*1e-6;
-                        updateDurationInfo(m_duration);
-
-                        Q_EMIT newFech(m_engine->format().sampleRate());
-                        Q_EMIT specieLoadedSignal(specieLoaded);
-
-                        m_engine->startPlayback();
-                        isLoaded = true;
-                    }
-                    else
-                    {
-                        Q_EMIT newText("Fichier introuvable");
-                        Q_EMIT newState(1);
-                    }
+                    m_player->play();
+                    m_isLoaded = true;
                     break;
                 }
-                Q_EMIT newState(0);
-
-                m_engine->startPlayback();
-
+                Q_EMIT newState(PLAYING);
+                m_player->play();
             }
                 break;
-            case QAudio::State::ActiveState:
+            case QMediaPlayer::PlayingState:
             {
-                m_engine->suspend();
-                Q_EMIT newState(1);
+                m_player->pause();
+                Q_EMIT newState(STOP);
             }
                 break;
         }
@@ -148,34 +134,50 @@ void PlayerControls::playClicked()
 
 void PlayerControls::previous()
 {
-    if(indexFile == 0)
-        indexFile = 0;
-    else
-        indexFile--;
-
-    isLoaded = false;
-    Q_EMIT newIndexFile(indexFile, filesPath.size());
-
-    if(filesPath.size() != 0)
-    {
-        playClicked();
-        playClicked();
-    }
+    m_playlist->previous();
 }
 
 void PlayerControls::next()
 {
-    if(indexFile == filesPath.size() - 1)
-        indexFile = filesPath.size() - 1;
-    else
-        indexFile++;
+    m_playlist->next();
+}
 
-    isLoaded = false;
-    Q_EMIT newIndexFile(indexFile, filesPath.size());
+void PlayerControls::seek(int seconds)
+{
+    m_player->setPosition(seconds * 1000);
+}
 
-    if(filesPath.size() != 0)
+void PlayerControls::changeRate(int value)
+{
+    m_player->setPlaybackRate(m_rate[value]);
+}
+
+void PlayerControls::playlistPositionChanged(int position)
+{
+    if(position != -1)
     {
-        playClicked();
-        playClicked();
+        WavFile m_file;
+
+        QString path = m_playlist->currentMedia().canonicalUrl().toString();
+#ifdef ANDROID
+        path.remove(0, 7);
+#endif
+
+        if(m_file.open(path))
+        {
+            m_file.seek(m_file.headerLength());
+            qint64 fileSize = m_file.size() - m_file.headerLength();
+
+            QByteArray tmp;
+            tmp.resize(fileSize);
+            m_file.read(tmp.data(), fileSize);
+            Track::get()->setFormat(m_file.fileFormat());
+            Track::get()->setData(tmp);
+            m_file.close();
+
+            Q_EMIT newIndexFile(position, m_playlist->mediaCount());
+
+            Q_EMIT newTrack();
+        }
     }
 }
