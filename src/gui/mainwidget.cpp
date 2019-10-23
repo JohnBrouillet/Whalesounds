@@ -6,7 +6,6 @@
 MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", path)
 {
     m_jsoncare.setSpecies();
-    m_dataAbsPath = path;
 
     m_controls = new PlayerControls(this);
     connect(&m_jsoncare, &JsonCaretaker::newTrack, m_controls, &PlayerControls::loadFiles);

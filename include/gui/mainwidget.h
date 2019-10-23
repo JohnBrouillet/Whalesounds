@@ -2,16 +2,8 @@
 #define MAINWIDGET_H
 
 #include <QWidget>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QSlider>
-#include <QLabel>
-#include <QTime>
-
 #include <QThread>
 #include <QQmlContext>
-#include <QPixmap>
-
 #include <QtQuickWidgets/QQuickWidget>
 
 #include "include/audio/playercontrols.h"
@@ -22,7 +14,6 @@
 
 class MainWidget : public QWidget
 {
-
 public:
     MainWidget(QString path);
     ~MainWidget();
@@ -35,12 +26,9 @@ private:
     AudioWidget * m_audioWidget;
     SpectrogramWidget * m_spectro;
     Spectrogram m_spectrum;
-
-    QThread * m_spectroThread;
-
     JsonCaretaker m_jsoncare;
 
-    QString m_dataAbsPath;
+    QThread * m_spectroThread;
 
     qint64 m_duration;
 };
