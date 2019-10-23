@@ -2,6 +2,5 @@
     <qresource prefix="/">
         <file>qml/soundsMenu.qml</file>
         <file>qml/design.qss</file>
-        <file>qml/functions.js</file>
     </qresource>
 </RCC>
