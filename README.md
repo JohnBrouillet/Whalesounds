@@ -49,7 +49,7 @@ Besides, json file has this architecture :
 Paths must be relative to data folder.
 At runtime, json file is read to create buttons. For marine sounds listening, buttons refer to family of animals and a group of audio files represents a specie.
 
-Buttons in the "configuration column" (appearing when "configuration" button is clicked) are a trick to zoom on the waterfall and its color gradient when the software is used on tablet. On desktop, mouse wheel can be used for this matter. Zoom X or zoom Y must be checked to activate zooming and dragging mode.
+Buttons in the "configuration column" (appearing when "configuration" button is clicked) are a trick to zoom on the spectrogram and its color gradient when the software is used on tablet. On desktop, mouse wheel can be used for this matter. Zoom X or zoom Y must be checked to activate zooming and dragging mode.
 
 
 ## Building
