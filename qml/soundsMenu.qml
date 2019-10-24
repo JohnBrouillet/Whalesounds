@@ -287,13 +287,13 @@ Item {
 
 ///////////////////
                 Label{
-                    horizontalAlignment: Label.Center
                     text: "Vitesse \n de lecture"
+                    horizontalAlignment: Label.Center
                 }
 
                 ComboBox{
                     id: rate
-                    Layout.preferredWidth: 90
+                    Layout.fillWidth: true
                     model : ["x0.25", "x0.5", "x0.75", "x1", "x1.25", "x1.5", "x1.75", "x2" ]
                     currentIndex: 3
                     onActivated: playercontrols.changeRate(rate.currentIndex);
@@ -383,7 +383,7 @@ Item {
                     icon.name: "repeat"
                     icon.width: 32
                     icon.height: 32
-
+                    Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: spectrogram.reinit();
                     Layout.columnSpan: 2
@@ -405,7 +405,7 @@ Item {
  ////////////////////
                 Button{
                     text: "Inverser les couleurs"
-
+                    Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: spectrogram.reverseColor();
                     Layout.columnSpan: 3

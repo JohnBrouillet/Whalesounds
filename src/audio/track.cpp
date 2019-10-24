@@ -43,15 +43,15 @@ void Track::setCopyrights(QString copyrights)
     m_copyrights = copyrights;
 }
 
-QVector<QVector<qreal>> Track::getData()
+QVector<qreal> Track::getData()
 {
     return m_data;
 }
 
 void Track::setData(QByteArray& data)
 {
-    QVector<QVector<qreal>> tmp(m_format.channelCount());
-    getBufferLevels(m_format, data, tmp);
+    QVector<qreal> tmp(m_format.channelCount());
+    getBufferLevels(data, m_format.channelCount(), tmp);
     m_data = tmp;
 }
 

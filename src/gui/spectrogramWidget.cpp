@@ -12,6 +12,9 @@ SpectrogramWidget::SpectrogramWidget()
     // delete and recreate cursor to put it on top of the color map
     delete m_cursor;
     m_cursor = new QCPItemLine(m_plot);
+    m_cursor->setPen(QPen(Qt::white));
+    m_cursor->start->setCoords(0, -QCPRange::maxRange);
+    m_cursor->end->setCoords(0, QCPRange::maxRange);
 
     design();
 }
@@ -25,7 +28,7 @@ void SpectrogramWidget::plot(QVector<qreal> data)
             m_colorMap->data()->setCell(xIndex, yIndex, data[xIndex * NFFT/2 + yIndex]);
     }
 
-    m_colorMap->rescaleDataRange();
+    m_colorMap->rescaleDataRange(true);
     m_plot->replot();
 }
 
@@ -33,12 +36,13 @@ void SpectrogramWidget::setAxis()
 {
     int fech = Track::get()->getFormat().sampleRate();
 
-    m_nbLines = Track::get()->getData()[0].size() / double( temporalResolution * fech );
+    m_nbLines = Track::get()->getData().size() / double( temporalResolution * fech );
 
     m_colorMap->data()->setSize(m_nbLines, NFFT/2);
     m_colorMap->data()->setRange(QCPRange(0, m_nbLines*temporalResolution), QCPRange(0, fech/2));
 
     m_plot->rescaleAxes();
+    m_plot->replot();
 }
 
 void SpectrogramWidget::reinit()
@@ -54,8 +58,7 @@ void SpectrogramWidget::design()
     m_plot->yAxis->setTickLabels(true);
 
     m_colorScale->setGradient(QCPColorGradient::gpPolar);
-
-    m_colorScale->setDataRange(QCPRange(0, 5));
+    m_colorScale->setDataRange(QCPRange(0, 350));
     m_colorScale->setType(QCPAxis::atRight); // scale shall be vertical bar with tick/axis labels right (actually atRight is already the default)
     m_colorMap->setColorScale(m_colorScale); // associate the color map with the color scale
 
@@ -70,11 +73,7 @@ void SpectrogramWidget::design()
 
 void SpectrogramWidget::changeColorRange(bool value)
 {
-    double factor;
-    if(value)
-        factor = 0.85;
-    else
-        factor = 1.17647;
+    double factor = getZoomFactor(value);
 
     QCPRange range = m_colorScale->dataRange();
     QCPRange newRange;
@@ -87,6 +86,7 @@ void SpectrogramWidget::changeColorRange(bool value)
 
 void SpectrogramWidget::changeColor(int color)
 {
+    m_cursor->setPen(QPen(Qt::black));
     switch(color)
     {
     case 0: m_colorScale->setGradient(QCPColorGradient::gpGrayscale);
@@ -106,6 +106,7 @@ void SpectrogramWidget::changeColor(int color)
     case 7: m_colorScale->setGradient(QCPColorGradient::gpThermal);
             break;
     case 8: m_colorScale->setGradient(QCPColorGradient::gpPolar);
+            m_cursor->setPen(QPen(Qt::white));
             break;
     case 9: m_colorScale->setGradient(QCPColorGradient::gpSpectrum);
             break;

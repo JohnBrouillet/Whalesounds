@@ -10,6 +10,9 @@ AbstractPlot::AbstractPlot() : m_plot(new QCustomPlot)
     m_plot->addGraph();
 
     m_cursor = new QCPItemLine(m_plot);
+    m_cursor->setPen(QPen(Qt::black));
+    m_cursor->start->setCoords(0, -QCPRange::maxRange);
+    m_cursor->end->setCoords(0, QCPRange::maxRange);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_plot);
@@ -18,7 +21,6 @@ AbstractPlot::AbstractPlot() : m_plot(new QCustomPlot)
 
 void AbstractPlot::updateCursor(double position)
 {
-    m_cursor->setPen(QPen(Qt::black));
     m_cursor->start->setCoords(position, -QCPRange::maxRange);
     m_cursor->end->setCoords(position, QCPRange::maxRange);
     m_plot->replot();
@@ -69,11 +71,7 @@ void AbstractPlot::zoom(bool X, bool Y)
 
 void AbstractPlot::zoomSpectro(bool value)
 {
-    double factor;
-    if(value)
-        factor = 0.85;
-    else
-        factor = 1.17647;
+    double factor = getZoomFactor(value);
 
     if(m_zoomX && !m_zoomY)
         m_plot->xAxis->scaleRange(factor, m_plot->xAxis->range().center());
@@ -86,6 +84,11 @@ void AbstractPlot::zoomSpectro(bool value)
         m_plot->yAxis->scaleRange(factor, m_plot->yAxis->range().center());
 
     m_plot->replot();
+}
+
+double AbstractPlot::getZoomFactor(bool zoom)
+{
+    return zoom ? 0.85 : 1.17647;
 }
 
 void AbstractPlot::design()

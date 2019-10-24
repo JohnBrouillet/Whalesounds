@@ -32,7 +32,7 @@ void Spectrogram::fft(QVector<double> data)
 void Spectrogram::computeFFT()
 {
     m_out.clear();
-    std::vector<qreal> data = Track::get()->getData()[0].toStdVector();
+    std::vector<qreal> data = Track::get()->getData().toStdVector();
     double overlapPerc = 0.5;
 
     int chunkSize = temporalResolution * Track::get()->getFormat().sampleRate();
