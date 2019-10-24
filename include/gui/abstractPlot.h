@@ -10,6 +10,7 @@ class AbstractPlot : public QWidget
 protected:
     AbstractPlot();
     void design();
+    double getZoomFactor(bool zoom);
 
 public Q_SLOTS:
     void updateCursor(double position);

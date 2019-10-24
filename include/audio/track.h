@@ -35,7 +35,7 @@ public Q_SLOTS:
     void setDescription(QString description);
     QString getCopyrights();
     void setCopyrights(QString copyrights);
-    QVector<QVector<qreal>> getData();
+    QVector<qreal> getData();
     void setData(QByteArray& data);
     QAudioFormat getFormat();
     void setFormat(QAudioFormat format);
@@ -43,7 +43,7 @@ public Q_SLOTS:
 private:
     static Track* m_trackInstance;
 
-    QVector<QVector<qreal>> m_data;
+    QVector<qreal> m_data;
     QAudioFormat m_format;
     QStringList m_pathList;
     QString m_name;

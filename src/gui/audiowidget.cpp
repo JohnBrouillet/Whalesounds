@@ -14,16 +14,16 @@ AudioWidget::AudioWidget()
 
 void AudioWidget::updateGraph()
 {
-    QVector<QVector<qreal>> data = Track::get()->getData();
+    QVector<qreal> data = Track::get()->getData();
     QAudioFormat format = Track::get()->getFormat();
 
     double resolution = double(1.0/format.sampleRate());
 
     m_plot->graph(0)->data()->clear();
-    for(int i = 0; i < data[0].size(); i++)
-        m_plot->graph(0)->addData(i*resolution, data[0][i]);
+    for(int i = 0; i < data.size(); i++)
+        m_plot->graph(0)->addData(i*resolution, data[i]);
 
-    m_plot->xAxis->setRange(0, data[0].size()*resolution);
+    m_plot->xAxis->setRange(0, data.size()*resolution);
 
     m_plot->replot();
 }
