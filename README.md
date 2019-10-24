@@ -3,7 +3,7 @@ WhaleSounds is a super user-friendly, free and open source application for marin
 
 It is primarily an educational software used during animations or expositions of [Longitude 181](https://www.longitude181.org). And can be downloaded [here](https://www.longitude181.org/espace-momes/).
 
-Waterfall spectrogram is used as a simple example to teach people how acoustic researchers can study a sound. Besides, it is cool to watch.
+Spectrogram is used as a simple example to teach people how acoustic researchers can study a sound. Besides, it is cool to watch.
 
 ## Usage
 Currently, only .wav files are usable.
