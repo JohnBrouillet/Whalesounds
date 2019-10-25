@@ -26,7 +26,11 @@ void Spectrogram::fft(QVector<double> data)
     m_transformer.forwardTransform(data.data(), fft);
 
     for(int i = 0; i < NFFT / 2; i++)
-        m_out.push_back(20*std::abs(std::log(std::abs(fft[i]) * 1e6)));
+    {
+        double tmp = std::log(std::abs(fft[i])* 1e6);
+        tmp = tmp >= 0 ? tmp : 0;
+        m_out.push_back(20*std::abs(tmp));
+    }
 }
 
 void Spectrogram::computeFFT()
