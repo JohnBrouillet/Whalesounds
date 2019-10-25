@@ -14,12 +14,13 @@
 
 class MainWidget : public QWidget
 {
+    Q_OBJECT
 public:
     MainWidget(QString path);
     ~MainWidget();
 
-private:
-    void engineConnect();
+public Q_SLOTS:
+    void reverseGraph();
 
 private:
     PlayerControls * m_controls;
@@ -28,6 +29,7 @@ private:
     Spectrogram m_spectrum;
     JsonCaretaker m_jsoncare;
 
+    QGridLayout * m_grid;
     QThread * m_spectroThread;
 
     qint64 m_duration;
