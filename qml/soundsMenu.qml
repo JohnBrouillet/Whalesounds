@@ -411,6 +411,15 @@ Item {
                     Layout.columnSpan: 3
                 }
 
+////////////////////
+                Button{
+                    text: "Inverser les graphes"
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: layout.reverseGraph();
+                    Layout.columnSpan: 3
+                }
+
             }
         }
     }

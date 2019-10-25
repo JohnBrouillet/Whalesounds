@@ -35,15 +35,35 @@ MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", pat
     buttonsWidget->rootContext()->setContextProperty("spectrogram", m_spectro);
     buttonsWidget->rootContext()->setContextProperty("audiograph", m_audioWidget);
     buttonsWidget->rootContext()->setContextProperty("track", Track::get());
+    buttonsWidget->rootContext()->setContextProperty("layout", this);
     buttonsWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     buttonsWidget->setSource(QUrl("qrc:qml/soundsMenu.qml"));
 
-    QGridLayout * grid = new QGridLayout;
-    grid->addWidget(m_audioWidget, 0, 1);
-    grid->addWidget(buttonsWidget, 0, 0, 1, 1);
-    grid->addWidget(m_spectro, 1, 0, 1, 2);
+    m_grid = new QGridLayout;
+    m_grid->addWidget(m_audioWidget, 0, 1);
+    m_grid->addWidget(buttonsWidget, 0, 0, 1, 1);
+    m_grid->addWidget(m_spectro, 1, 0, 1, 2);
 
-    setLayout(grid);
+    setLayout(m_grid);
+}
+
+void MainWidget::reverseGraph()
+{
+    int indexA = m_grid->indexOf(m_audioWidget);
+    int indexB = m_grid->indexOf(m_spectro);
+    int row1, column1, rowSpan1, columnSpan1;
+    int row2, column2, rowSpan2, columnSpan2;
+
+    m_grid->getItemPosition(indexA, &row1, &column1, &rowSpan1, &columnSpan1);
+    m_grid->getItemPosition(indexB, &row2, &column2, &rowSpan2, &columnSpan2);
+
+    QLayoutItem * tmp1 = m_grid->takeAt(indexA);
+    QLayoutItem * tmp2 = m_grid->takeAt(indexB);
+    delete tmp1;
+    delete tmp2;
+
+    m_grid->addWidget(m_spectro, row1, column1, rowSpan1, columnSpan1);
+    m_grid->addWidget(m_audioWidget, row2, column2, rowSpan2, columnSpan2);
 }
 
 MainWidget::~MainWidget()
