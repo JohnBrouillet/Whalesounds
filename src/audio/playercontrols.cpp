@@ -64,7 +64,7 @@ void PlayerControls::loadFiles()
    m_playlist->clear();
    foreach(const QString & file, Track::get()->getPaths())
    {
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__unix__)
        QUrl url = QUrl("file://"+file);
 #else
        QUrl url = QUrl(file);
@@ -159,7 +159,7 @@ void PlayerControls::playlistPositionChanged(int position)
         WavFile m_file;
 
         QString path = m_playlist->currentMedia().canonicalUrl().toString();
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__unix__)
         path.remove(0, 7);
 #endif
 
