@@ -11,6 +11,10 @@
 #include <QtAndroid>
 #endif
 
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif
+
 int main(int argc, char *argv[])
 {
     QString path;
@@ -33,6 +37,9 @@ int main(int argc, char *argv[])
        if(resultHash["android.permission.READ_EXTERNAL_STORAGE"] == QtAndroid::PermissionResult::Denied)
            return 0;
     }
+#elif TARGET_OS_IOS
+    QStringList pathList = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
+    path = pathList[0] + "/data";
 #else
     path = QDir::currentPath() + "/data";
 #endif

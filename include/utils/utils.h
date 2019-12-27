@@ -2,6 +2,8 @@
 #define UTILS_H
 
 #include <QAudioFormat>
+#include <QVector>
+
 
 qreal pcmToReal(qint16 pcm);
 // get data of one channel

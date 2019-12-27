@@ -14,6 +14,8 @@ PlayerControls::PlayerControls(QWidget *parent)
 
 #ifdef ANDROID
     m_player->setNotifyInterval(100);
+#elif TARGET_OS_IOS
+    m_player->setNotifyInterval(10);
 #else
     m_player->setNotifyInterval(10);
 #endif
@@ -65,6 +67,8 @@ void PlayerControls::loadFiles()
    foreach(const QString & file, Track::get()->getPaths())
    {
 #if defined(ANDROID) || defined(__unix__)
+       QUrl url = QUrl("file://"+file);
+#elif TARGET_OS_IOS
        QUrl url = QUrl("file://"+file);
 #else
        QUrl url = QUrl(file);
@@ -160,6 +164,8 @@ void PlayerControls::playlistPositionChanged(int position)
 
         QString path = m_playlist->currentMedia().canonicalUrl().toString();
 #if defined(ANDROID) || defined(__unix__)
+        path.remove(0, 7);
+#elif TARGET_OS_IOS
         path.remove(0, 7);
 #endif
 

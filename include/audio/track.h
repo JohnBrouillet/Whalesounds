@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QAudioFormat>
 #include <QObject>
+#include <QVector>
 
 class Track : public QObject
 {
