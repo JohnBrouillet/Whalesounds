@@ -19,6 +19,7 @@ TEMPLATE = app
 
 msvc: QMAKE_CXXFLAGS_RELEASE += /O2 /arch:AVX
 gcc: QMAKE_CXXFLAGS_RELEASE += -O2
+clang: QMAKE_CXXFLAGS_RELEASE += -O2
 
 
 # The following define makes your compiler emit warnings if you use
