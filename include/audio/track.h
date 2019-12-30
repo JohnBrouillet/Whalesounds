@@ -41,6 +41,9 @@ public Q_SLOTS:
     QAudioFormat getFormat();
     void setFormat(QAudioFormat format);
 
+Q_SIGNALS:
+    void name(QString name);
+
 private:
     static Track* m_trackInstance;
 

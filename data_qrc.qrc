@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>qml/soundsMenu.qml</file>
         <file>qml/design.qss</file>
+        <file>qml/TileView.qml</file>
+        <file>qml/Tile.qml</file>
     </qresource>
 </RCC>

@@ -12,12 +12,15 @@
 #include "audiowidget.h"
 #include "spectrogramWidget.h"
 
+
 class MainWidget : public QWidget
 {
     Q_OBJECT
 public:
-    MainWidget(QString path);
+    MainWidget(QString path, JsonCaretaker& jsoncare);
     ~MainWidget();
+
+    void setShower(QObject* widget);
 
 public Q_SLOTS:
     void reverseGraph();
@@ -27,7 +30,8 @@ private:
     AudioWidget * m_audioWidget;
     SpectrogramWidget * m_spectro;
     Spectrogram m_spectrum;
-    JsonCaretaker m_jsoncare;
+    JsonCaretaker& m_jsoncare;
+    QQuickWidget *buttonsWidget;
 
     QGridLayout * m_grid;
     QThread * m_spectroThread;

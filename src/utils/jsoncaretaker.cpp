@@ -1,7 +1,6 @@
 #include "include/utils/jsoncaretaker.h"
 #include "include/audio/track.h"
 
-
 JsonCaretaker::JsonCaretaker(QString path, QString abspath)
 {
     m_absPath = abspath;
@@ -43,6 +42,27 @@ QVariantList JsonCaretaker::getEspeces(QString family)
     return species;
 }
 
+QVariantList JsonCaretaker::getAllImagesPaths()
+{
+    QVariantList paths;
+
+    foreach(const QVariant & family, m_famille)
+        paths << getAllImagesPathsFamily(family.toString());
+
+    return paths;
+}
+
+QVariantList JsonCaretaker::getAllImagesPathsFamily(QString family)
+{
+    QVariantList paths;
+
+    QStringList listSpecies = m_speciesByFamily.values(family);
+    foreach(const QString & specie, listSpecies)
+        paths << specie << (m_absPath + m_species[m_speciesByFamily.keys(specie)[0]].toObject()[specie].toObject()["image"].toString());
+
+    return paths;
+}
+
 void JsonCaretaker::sendPaths(QString species)
 {
     Track::get()->setName(species);
@@ -68,17 +88,23 @@ void JsonCaretaker::getSoundsPath(QString species)
     foreach(const QVariant & s, soundsList)
         sounds << m_absPath + s.toString();
 
+    Q_EMIT soundsPath(sounds);
     Track::get()->setPaths(sounds);
 }
 
 void JsonCaretaker::getCopyrights(QString species)
 {
-    Track::get()->setCopyrights(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["credits"].toString());
+    QString copyrights = m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["credits"].toString();
+
+    Q_EMIT sendCopyrights(copyrights);
+    Track::get()->setCopyrights(copyrights);
 }
 
 void JsonCaretaker::getDescription(QString species)
 {
-    Track::get()->setDescription(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["description"].toString());
+    QString description(m_species[m_speciesByFamily.keys(species)[0]].toObject()[species].toObject()["description"].toString());
+    Q_EMIT sendDescription(description);
+    Track::get()->setDescription(description);
 }
 
 void JsonCaretaker::printKeyValues()

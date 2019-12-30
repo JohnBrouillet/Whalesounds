@@ -55,7 +55,8 @@ SOURCES += \
     src/main.cpp \
     src/processing/spectrogram.cpp \
     src/utils/jsoncaretaker.cpp \
-    src/utils/utils.cpp
+    src/utils/utils.cpp \
+    src/utils/widgetShower.cpp
 
 HEADERS += \
     3rdparties/QRealFourier-master/code/fftreal/Array.h \
@@ -95,7 +96,8 @@ HEADERS += \
     include/gui/spectrogramWidget.h \
     include/processing/spectrogram.h \
     include/utils/jsoncaretaker.h \
-    include/utils/utils.h
+    include/utils/utils.h \
+    include/utils/widgetShower.h
 
 
 CONFIG += mobility

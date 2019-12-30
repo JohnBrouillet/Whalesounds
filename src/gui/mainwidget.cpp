@@ -1,12 +1,9 @@
-#include <QQmlEngine>
 
 #include "include/gui/mainwidget.h"
 #include "include/audio/track.h"
 
-MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", path)
+MainWidget::MainWidget(QString path, JsonCaretaker& jsoncare) : m_jsoncare(jsoncare)
 {
-    m_jsoncare.setSpecies();
-
     m_controls = new PlayerControls(this);
     connect(&m_jsoncare, &JsonCaretaker::newTrack, m_controls, &PlayerControls::loadFiles);
 
@@ -28,16 +25,24 @@ MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", pat
 
     connect(&m_spectrum, &Spectrogram::dataReady, m_spectro, &SpectrogramWidget::plot);
 
-    QQuickWidget *buttonsWidget = new QQuickWidget;
+    buttonsWidget = new QQuickWidget;
     buttonsWidget->setClearColor(QColor("#dfe4ea"));
     buttonsWidget->rootContext()->setContextProperty("jsoncare", &m_jsoncare);
     buttonsWidget->rootContext()->setContextProperty("playercontrols", m_controls);
     buttonsWidget->rootContext()->setContextProperty("spectrogram", m_spectro);
     buttonsWidget->rootContext()->setContextProperty("audiograph", m_audioWidget);
     buttonsWidget->rootContext()->setContextProperty("track", Track::get());
+
+#ifdef defined(ANDROID) || define(TARGET_OS_IOS)
+    buttonsWidget->rootContext()->setContextProperty("EVENT_MODE", QVariant(false));
+#else
+    buttonsWidget->rootContext()->setContextProperty("EVENT_MODE", QVariant(false));
+#endif
+
     buttonsWidget->rootContext()->setContextProperty("layout", this);
     buttonsWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     buttonsWidget->setSource(QUrl("qrc:qml/soundsMenu.qml"));
+
 
     m_grid = new QGridLayout;
     m_grid->addWidget(m_audioWidget, 0, 1);
@@ -64,6 +69,11 @@ void MainWidget::reverseGraph()
 
     m_grid->addWidget(m_spectro, row1, column1, rowSpan1, columnSpan1);
     m_grid->addWidget(m_audioWidget, row2, column2, rowSpan2, columnSpan2);
+}
+
+void MainWidget::setShower(QObject* widget)
+{
+    buttonsWidget->rootContext()->setContextProperty("shower", widget);
 }
 
 MainWidget::~MainWidget()

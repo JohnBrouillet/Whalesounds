@@ -1,4 +1,7 @@
 #include "include/gui/mainwidget.h"
+#include "include/utils/jsoncaretaker.h"
+#include "include/audio/track.h"
+#include "include/utils/widgetShower.h"
 
 #include <QApplication>
 #include <QtQuickControls2>
@@ -56,12 +59,26 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Imagine");
     a.setStyleSheet(styleSheet);
 
-    MainWidget w(path);
+    JsonCaretaker jsoncare(path + "/whale_data.json", path);
+    jsoncare.setSpecies();
 
-    QRect screenres = QApplication::desktop()->screenGeometry(0/*screenNumber*/);
+    WidgetShower shower(path, jsoncare);
+
+    QQuickWidget *tileView = new QQuickWidget;
+    tileView->setClearColor(QColor("#dfe4ea"));
+    tileView->rootContext()->setContextProperty("jsoncare", &jsoncare);
+    tileView->rootContext()->setContextProperty("shower", &shower);
+    tileView->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    tileView->setSource(QUrl("qrc:qml/TileView.qml"));
+    tileView->show();
+
+
+    /*MainWidget w(path, jsoncare);
+
+    QRect screenres = QApplication::desktop()->screenGeometry(1);
     w.move(QPoint(screenres.x(), screenres.y()));
     w.resize(screenres.width(), screenres.height());
-    w.show();
+    w.show();*/
 
     return a.exec();
 }

@@ -20,6 +20,7 @@ Item {
 
 
         ColumnLayout{
+            visible: EVENT_MODE
             spacing: 16
             Layout.preferredWidth: 30
 
@@ -266,18 +267,26 @@ Item {
                 }
             }
 
-            Button{
-                id: controlVisibility
+            Row{
+                spacing: 5
                 Layout.alignment: Qt.AlignHCenter
-                onClicked: control.visible = !control.visible
-                text: "Configuration"
-            }
 
+                Button{
+                    text: "Revenir aux photos"
+                    onClicked: shower.unshow()
+                }
+
+                Button{
+                    id: controlVisibility
+                    onClicked: control.visible = !control.visible
+                    text: "Configuration"
+                }
+            }
         }
 
         ColumnLayout{
             id: control
-            visible: false
+            visible: !EVENT_MODE
             GridLayout{
 
                 id: spectroControl

@@ -1,6 +1,6 @@
 #include "include/audio/track.h"
 #include "include/utils/utils.h"
-
+#include <iostream>
 Track *Track::m_trackInstance = nullptr;
 
 QStringList Track::getPaths()
@@ -15,6 +15,7 @@ void Track::setPaths(QStringList& paths)
 
 QString Track::getName()
 {
+    Q_EMIT name(m_name);
     return m_name;
 }
 

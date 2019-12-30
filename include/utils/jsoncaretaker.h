@@ -9,6 +9,7 @@
 #include <QVariantList>
 #include <QMultiMap>
 #include <QDebug>
+#include <QQmlEngine>
 #include <iostream>
 
 
@@ -17,6 +18,7 @@ class JsonCaretaker : public QObject
     Q_OBJECT
 
 public:
+    JsonCaretaker(){}
     JsonCaretaker(QString path, QString abspath);
     void setSpecies();
     void printKeyValues();
@@ -30,17 +32,19 @@ public Q_SLOTS:
     void sendPaths(QString species);
     QVariantList getFamily(){ return m_famille; }
     QVariantList getEspeces(QString family);
+    QVariantList getAllImagesPaths();
+    QVariantList getAllImagesPathsFamily(QString family);
 
 Q_SIGNALS:
     void sendNames(QVariantList family, QVariantList species);
 
-    void soundsPath(QString, QStringList);
+    void soundsPath(QStringList _paths);
     void imagePath(QString _path);
     void name(QString _name);
-    void copyrights(QString _copyrights);
+    void sendCopyrights(QString _copyrights);
+    void sendDescription(QString _description);
 
     void newTrack();
-
 
 private:
     QJsonDocument m_document;
