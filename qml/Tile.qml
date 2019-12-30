@@ -33,12 +33,14 @@ Item{
         radius: 20
         color: "white"
         opacity: 0.9
+
+
+        MouseArea{
+            anchors.fill: parent
+            onClicked: tile.stateVisible = false
+        }
     }
 
-    MouseArea{
-        anchors.fill: parent
-        onClicked: tile.stateVisible = false
-    }
 
     GridLayout{
         id: layout
