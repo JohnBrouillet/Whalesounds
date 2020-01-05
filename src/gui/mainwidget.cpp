@@ -45,9 +45,9 @@ MainWidget::MainWidget(QString path, JsonCaretaker& jsoncare) : m_jsoncare(jsonc
 
 
     m_grid = new QGridLayout;
-    m_grid->addWidget(m_audioWidget, 0, 1);
     m_grid->addWidget(buttonsWidget, 0, 0, 1, 1);
-    m_grid->addWidget(m_spectro, 1, 0, 1, 2);
+    m_grid->addWidget(m_audioWidget, 0, 1, 1, 2);
+    m_grid->addWidget(m_spectro, 1, 0, 1, 3);
 
     setLayout(m_grid);
 }

@@ -190,15 +190,15 @@ void QFourierTransformer::conjugate(double input[])
 	}
 }
 
-QComplexVector QFourierTransformer::toComplex(float input[])
+QComplexVector QFourierTransformer::toComplex(double input[])
 {
 	int last = mSize / 2;
-	QVector<QComplexFloat> result(last + 1);
-	result[0] = QComplexFloat(input[0], 0);
+    QVector<QComplexDouble> result(last + 1);
+    result[0] = QComplexDouble(input[0], 0);
 	for(int i = 1; i < last; ++i)
 	{
-		result[i] = QComplexFloat(input[i], -input[last + i]);
+        result[i] = QComplexDouble(input[i], -input[last + i]);
 	}
-	result[last] = QComplexFloat(input[last], 0);
+    result[last] = QComplexDouble(input[last], 0);
 	return result;
 }

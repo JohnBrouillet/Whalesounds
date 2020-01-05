@@ -18,5 +18,7 @@
         <file>whalesounds/32x32/moins.png</file>
         <file>whalesounds/32x32/plus.png</file>
         <file>whalesounds/32x32@2/play1.png</file>
+        <file>whalesounds/32x32@2/zoomPx1.png</file>
+        <file>whalesounds/32x32@2/zoomPy1.png</file>
     </qresource>
 </RCC>

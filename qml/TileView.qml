@@ -2,13 +2,17 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Imagine 2.3
+import QtQuick.Controls.Material 2.12
+
 import QtQuick.Window 2.2
+import QtQuick.Dialogs 1.3
 import "./" as T
 
 
 Item {
     height: Screen.height
     width: Screen.width
+    Material.accent: Material.Blue
 
     GridView{
        id: listview
@@ -31,7 +35,7 @@ Item {
 
        delegate: ItemDelegate{
            Rectangle{
-               color: "white"
+               color: "#dfe4ea"
                width: listview.cellWidth
                height: listview.cellHeight
                Image {
@@ -90,7 +94,7 @@ Item {
        height: 75
        color: "#dfe4ea"
        opacity: 0.7
-       radius: 20
+       radius: 10
        anchors.bottom: parent.bottom
        anchors.bottomMargin: 10
        anchors.horizontalCenter: parent.horizontalCenter
@@ -113,7 +117,7 @@ Item {
                id: allButton
                checked: true
                text: "Tous"
-               flat: true
+               //flat: true
                height: filter.height - 25
                ButtonGroup.group: radioGroup
                onClicked:{
@@ -136,7 +140,7 @@ Item {
 
                Button{
                    id: buttons
-                   flat: true
+                   //flat: true
                    text: modelData
                    ButtonGroup.group: radioGroup
                    height: filter.height - 25

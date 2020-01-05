@@ -13,9 +13,13 @@ android{
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = whalesounds
+TARGET = whalesound
 TEMPLATE = app
 
+ios: {
+  QMAKE_TARGET_BUNDLE_PREFIX = com.john
+  QMAKE_DEVELOPMENT_TEAM = john
+}
 
 msvc: QMAKE_CXXFLAGS_RELEASE += /O2 /arch:AVX
 gcc: QMAKE_CXXFLAGS_RELEASE += -O2

@@ -15,6 +15,7 @@ public:
 public Q_SLOTS:
     void show();
     void unshow();
+    QString durationText(qint64 position, qint64 duration);
 
 private:
     QString m_path;

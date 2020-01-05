@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     QIcon::setThemeName("whalesounds");
 
-    QQuickStyle::setStyle("Imagine");
+    QQuickStyle::setStyle("Material");
     a.setStyleSheet(styleSheet);
 
     JsonCaretaker jsoncare(path + "/whale_data.json", path);

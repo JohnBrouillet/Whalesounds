@@ -98,7 +98,7 @@ void AbstractPlot::design()
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%m:%s:%z");
-    timeTicker->setTickCount(5);
+    timeTicker->setTickCount(3);
     m_plot->xAxis->setTicker(timeTicker);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->axisRect()->setRangeDrag(Qt::Horizontal);

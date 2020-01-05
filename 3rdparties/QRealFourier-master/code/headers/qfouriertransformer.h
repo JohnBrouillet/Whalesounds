@@ -46,7 +46,7 @@ qrealfourier@gmail.com
 #include "qcomplexnumber.h"
 #include <QMap>
 
-typedef QVector<QComplexFloat> QComplexVector;
+typedef QVector<QComplexDouble> QComplexVector;
 
 class QFourierTransformer
 {
@@ -81,7 +81,7 @@ class QFourierTransformer
         void rescale(double input[]);
 
         void conjugate(double input[]);
-		QComplexVector toComplex(float input[]);
+        QComplexVector toComplex(double input[]);
 
 	protected:
 

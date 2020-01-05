@@ -2,15 +2,16 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Imagine 2.3
+import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.2
 
 Item {
     id: menuFiles
-
+    Material.accent: Material.Blue
     height: Screen.height / 2
     width: Screen.width / 2
 
-    RowLayout
+    ColumnLayout
     {
         id: rowE
         anchors.fill: parent
@@ -20,7 +21,7 @@ Item {
 
 
         ColumnLayout{
-            visible: EVENT_MODE
+            visible: false
             spacing: 16
             Layout.preferredWidth: 30
 
@@ -119,6 +120,8 @@ Item {
         }
 
         ColumnLayout {
+            id: playerLayout
+            visible: true
             spacing: 26
             Layout.preferredWidth: 50
             Layout.alignment: Qt.AlignHCenter
@@ -230,9 +233,9 @@ Item {
                     // 1 : bouton play, 0 : button pause
                     property bool playing: true
                     id: playButton
-                    icon.name: playing ? "play" : "pause"
-                    icon.width: 32
-                    icon.height: 32
+                    icon.name: playing ? "play1" : "pause"
+                    icon.width: 64
+                    icon.height: 64
                     enabled: true
                     onClicked: {
                         playercontrols.playClicked();
@@ -265,34 +268,20 @@ Item {
                         }
                     }
                 }
-            }
-
-            Row{
-                spacing: 5
-                Layout.alignment: Qt.AlignHCenter
-
-                Button{
-                    text: "Revenir aux photos"
-                    onClicked: shower.unshow()
-                }
-
-                Button{
-                    id: controlVisibility
-                    onClicked: control.visible = !control.visible
-                    text: "Configuration"
-                }
-            }
+            }    
         }
 
         ColumnLayout{
             id: control
-            visible: !EVENT_MODE
+            visible: false
+            Layout.alignment: Qt.AlignHCenter
+    
             GridLayout{
 
                 id: spectroControl
                 Layout.alignment: Qt.AlignHCenter
 
-                columns:  3
+                columns:  6
 
 ///////////////////
                 Label{
@@ -309,10 +298,33 @@ Item {
                     Layout.columnSpan: 2
                 }
 
+                Label{
+                    text: "Echelle \n colorimétrique"
+                    horizontalAlignment: Label.Center
+                }
 
+
+                Button{
+                    icon.name: "moins"
+                    icon.width: 64
+                    icon.height: 64
+                    Layout.fillWidth: true
+
+                    onClicked: spectrogram.changeColorRange(0)
+                }
+
+                Button{
+                    icon.name: "plus"
+                    icon.width: 64
+                    icon.height: 64
+                    Layout.fillWidth: true
+
+                    onClicked: spectrogram.changeColorRange(1)
+                }
 ///////////////////
                 Label{
-                    text: "Zoom horizontal"
+                    text: "Zoom \n horizontal"
+                    horizontalAlignment: Label.Center
                 }
 
                 CheckBox{
@@ -325,18 +337,34 @@ Item {
                 }
 
                 Button{
-                    icon.name: "zoomPx"
-                    icon.width: 32
-                    icon.height: 32
+                    icon.name: "zoomPx1"
+                    icon.width: 64
+                    icon.height: 64
 
                     onClicked:{
                         spectrogram.zoomSpectro(1);
                         if(!checkY.checkState) audiograph.zoomSpectro(1);
                     }
                 }
+
+                Label{
+                    text: "Réinitialisation \n échelle"
+                    horizontalAlignment: Label.Center
+                }
+
+                Button{
+                    icon.name: "repeat"
+                    icon.width: 64
+                    icon.height: 64
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: spectrogram.reinit();
+                    Layout.columnSpan: 2
+                }
 ////////////////////
                 Label{
-                    text: "Zoom vertical"
+                    text: "Zoom \n vertical"
+                    horizontalAlignment: Label.Center
                 }
 
                 CheckBox{
@@ -348,59 +376,21 @@ Item {
                 }
 
                 Button{
-                    icon.name: "zoomPy"
-                    icon.width: 32
-                    icon.height: 32
+                    icon.name: "zoomPy1"
+                    icon.width: 64
+                    icon.height: 64
 
                     onClicked: {
                         spectrogram.zoomSpectro(0);
                         if(!checkY.checkState) audiograph.zoomSpectro(0);
                     }
                 }
-////////////////////
 
-                Label{
-                    text: "Echelle \n colorimétrique"
-                    horizontalAlignment: Label.Center
-                }
-
-                Button{
-                    icon.name: "plus"
-                    icon.width: 32
-                    icon.height: 32
-
-                    onClicked: spectrogram.changeColorRange(1)
-                }
-
-
-                Button{
-                    icon.name: "moins"
-                    icon.width: 32
-                    icon.height: 32
-
-                    onClicked: spectrogram.changeColorRange(0)
-                }
-
-////////////////////
-
-                Label{
-                    text: "Réinitialisation \n échelle"
-                    horizontalAlignment: Label.Center
-                }
-
-                Button{
-                    icon.name: "repeat"
-                    icon.width: 32
-                    icon.height: 32
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignHCenter
-                    onClicked: spectrogram.reinit();
-                    Layout.columnSpan: 2
-                }
 
                 Label{
                     text: "Couleur"
-                    horizontalAlignment: Label.Center
+                    Layout.alignment: Qt.AlignCenter
+
                 }
 
                 ComboBox{
@@ -409,6 +399,8 @@ Item {
                     currentIndex: 8
                     onActivated: spectrogram.changeColor(colorGradientChoices.currentIndex);
                     Layout.columnSpan: 2
+                    Layout.fillWidth: true
+
                 }
 
  ////////////////////
@@ -417,7 +409,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: spectrogram.reverseColor();
-                    Layout.columnSpan: 3
+                    Layout.columnSpan: 6
                 }
 
 ////////////////////
@@ -426,9 +418,28 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: layout.reverseGraph();
-                    Layout.columnSpan: 3
+                    Layout.columnSpan: 6
                 }
 
+            }
+        }
+
+        Row{
+            spacing: 5
+            Layout.alignment: Qt.AlignHCenter
+
+            Button{
+                text: "Revenir aux photos"
+                onClicked: shower.unshow()
+            }
+
+            Button{
+                id: controlVisibility
+                onClicked: {
+                    control.visible = !control.visible;
+                    playerLayout.visible = !playerLayout.visible;
+                }
+                text: "Configuration"
             }
         }
     }

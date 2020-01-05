@@ -15,7 +15,7 @@ PlayerControls::PlayerControls(QWidget *parent)
 #ifdef ANDROID
     m_player->setNotifyInterval(100);
 #elif TARGET_OS_IOS
-    m_player->setNotifyInterval(10);
+    m_player->setNotifyInterval(200);
 #else
     m_player->setNotifyInterval(10);
 #endif

@@ -2,9 +2,11 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtMultimedia 5.12
+import QtQuick.Controls.Material 2.12
 
 Item{
     id: tile
+    Material.accent: Material.Blue
     width: parent.width
     height: parent.height
     property bool stateVisible: false
@@ -13,9 +15,8 @@ Item{
     property var animal
 
     property var currentIndexPlaying: -1
-    property var playingGlobal: false
 
-    onVisibleChanged: { audioFile.stop(); playingGlobal = false; currentIndexPlaying = -1 }
+    onVisibleChanged: { audioFile.stop(); currentIndexPlaying = -1 }
 
     states: [
         State { when: tile.stateVisible;
@@ -30,10 +31,9 @@ Item{
         height: layout.height + 50
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        radius: 20
-        color: "white"
+        radius: 10
+        color: "#dfe4ea"
         opacity: 0.9
-
 
         MouseArea{
             anchors.fill: parent
@@ -48,8 +48,9 @@ Item{
         anchors.verticalCenter: parent.verticalCenter
         Layout.alignment: Qt.AlignCenter
         columns: 2
+        property var rowSpanValue
         Image {
-            Layout.rowSpan: 4
+            Layout.rowSpan: layout.rowSpanValue
             id: animalZoom
             Layout.alignment: Qt.AlignCenter
             sourceSize.width: tile.width / 3
@@ -63,7 +64,7 @@ Item{
             id: animalName
             Layout.alignment: Qt.AlignHCenter
             wrapMode: Text.WordWrap
-            lineHeight: 3
+            lineHeight: 1
             font.pixelSize: Qt.application.font.pixelSize * 2.0
             text: tile.animal
         }
@@ -71,105 +72,138 @@ Item{
         Label{
             id: description
             Layout.alignment: Qt.AlignHCenter
+            lineHeight: 2
             Connections{
                 target: jsoncare
                 onSendDescription:{
-                    description.text = _description
+                    if(_description !== "")
+                    {
+                        description.text = _description
+                        description.visible = true
+                        layout.rowSpanValue = 4
+                    }
+                    else
+                    {
+                        description.visible = false
+                        layout.rowSpanValue = 3
+                    }
                }
             }
         }
 
-        ButtonGroup{id: groupPlayButton }
-        ColumnLayout{
-            id: sounds
-            spacing: 8
-            Layout.fillWidth: true
+        Frame{
 
-            Connections{
-                target: jsoncare
-                onSoundsPath:{
-                    repeaterSounds.model = _paths;
+            background: Rectangle {
+                   color: "transparent"
+                   radius: 5
                }
-            }
-            Repeater{
-                id: repeaterSounds
 
+            Layout.fillWidth: true
+            ColumnLayout{
+                id: sounds
+                spacing: 8
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
 
+                Connections{
+                    target: jsoncare
+                    onSoundsPath:{
+                        audioFile.stop();
+                        currentIndexPlaying = -1;
+                        repeaterSounds.model = _paths;     
+                   }
 
-                RowLayout{
-                    id: soundsControler
-                    Layout.alignment: Qt.AlignHCenter
+                }
 
-                    Label{
-                        text: index + " : "
-                    }
-                    Slider{
-                        id:slider
-                        from: 0.0
-                        stepSize: 0.1
-                        to: audioFile.duration
-                        value: currentIndexPlaying === index ? audioFile.position : value
-                        onMoved: audioFile.seek(value)
-                    }
-                    Label{
-                        id: time
-                        text: currentIndexPlaying === index ? (audioFile.position*0.001).toFixed(0) + "/" + (audioFile.duration*0.001).toFixed(0) : "00/00"
-                    }
+                Repeater{
+                    id: repeaterSounds
 
-                    RoundButton {
-                        id: stop
-                        icon.name: "stop"
-                        icon.width: 64
-                        icon.height: 64
-                        enabled: currentIndexPlaying !== index ? false : true
-                        onClicked: {
-                            currentIndexPlaying = -1
-                            audioFile.stop()
-                            play.checked = false
-                            playingGlobal = false
+                    RowLayout{
+                        id: soundsControler
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.fillWidth: true
+
+                        Slider{
+                            id:slider
+                            from: 0.0
+                            stepSize: 0.1
+                            to: audioFile.duration
+                            value: currentIndexPlaying === index ? audioFile.position : 0.0
+                            onMoved: audioFile.seek(value)
+                            Layout.fillWidth: true
+                        }
+                        Label{
+                            id: time
+                            property var duree : currentIndexPlaying === index ? audioFile.duration : 0.0
+                            text: currentIndexPlaying === index ? shower.durationText(audioFile.position, audioFile.duration) : shower.durationText(0.0, audioDummy.duration)
+                        }
+
+                        RoundButton {
+                            id: stop
+                            icon.name: "stop"
+                            icon.width: 64
+                            icon.height: 64
+                            enabled: currentIndexPlaying !== index ? false : true
+                            onClicked: {
+                                currentIndexPlaying = -1;
+                                audioFile.stop();
+                            }
+                        }
+
+                        RoundButton {
+                            checked: false
+                            id: play
+                            icon.name: "play1"
+                            icon.width: 64
+                            icon.height: 64
+                            enabled: true
+
+                            property bool playing: currentIndexPlaying !== index ? false : true
+                            onClicked: {
+                                audioFile.source = "file:///" + modelData
+
+                                if(audioFile.playbackState === Audio.PlayingState)
+                                    audioFile.pause();
+                                else
+                                {
+                                    currentIndexPlaying = index
+                                    audioFile.play();
+                                }
+                            }
+                        }
+
+                        Audio{
+                            id: audioDummy
+                            source: "file:///" + modelData
                         }
                     }
-
-                    RoundButton {
-                        ButtonGroup.group: groupPlayButton
-                        checked: false
-                        id: play
-                        icon.name: checked && playingGlobal ? "pause" : "play1"
-                        icon.width: 64
-                        icon.height: 64
-                        enabled: true
-
-                        property bool playing: currentIndexPlaying !== index ? false : true
-                        onClicked: {
-                            audioFile.source = "file:///" + modelData
-                            checked = true
-                            if(!playingGlobal)
-                            {
-                                audioFile.play();
-                                playingGlobal = true;
-                                currentIndexPlaying = index
-                            }
-                            else
-                            {
-                                audioFile.pause()
-                                playingGlobal = false
-                            }
-
+                }
+                Audio{
+                    id: audioFile
+                    onPlaying: {
+                        for(var i = 0; i < repeaterSounds.count; i++)
+                        {
+                            repeaterSounds.itemAt(i).children[3].icon.name = currentIndexPlaying === i ? "pause" : "play1";
+                        }
+                    }
+                    onPaused: {
+                        repeaterSounds.itemAt(currentIndexPlaying).children[3].icon.name = "play1";
+                    }
+                    onStopped: {
+                        for(var i = 0; i < repeaterSounds.count; i++)
+                        {
+                            repeaterSounds.itemAt(i).children[3].icon.name = "play1";
                         }
                     }
                 }
             }
-            Audio{
-                id: audioFile
-            }
         }
-
         Button{
             id: expertMode
             text: "Ouvrir dans le mode expert"
             Layout.fillWidth: true
             height: 20
-            onClicked: shower.show()
+            onClicked: { shower.show(); audioFile.stop(); }
         }
 
         Label{
