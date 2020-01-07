@@ -13,7 +13,7 @@ class Spectrogram : public QObject
     Q_OBJECT
 public:
     Spectrogram();
-    void fft(QVector<double>& data);
+    void fft(QVector<double>& data, bool padding);
 
 public Q_SLOTS:
     void computeFFT();
