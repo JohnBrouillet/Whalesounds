@@ -36,7 +36,7 @@ void SpectrogramWidget::setAxis()
 {
     int fech = Track::get()->getFormat().sampleRate();
 
-    m_nbLines = Track::get()->getData().size() / double( temporalResolution * fech );
+    m_nbLines = Track::get()->getData().size() / double( temporalResolution * fech ) - 1;
 
     m_colorMap->data()->setSize(m_nbLines, NFFT/2);
     m_colorMap->data()->setRange(QCPRange(0, m_nbLines*temporalResolution), QCPRange(0, fech/2));

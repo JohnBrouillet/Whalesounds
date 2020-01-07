@@ -12,34 +12,43 @@ Spectrogram::Spectrogram()
     m_transformer.setWindowFunction("Hamming");
 }
 
-void Spectrogram::fft(QVector<double> data)
+void Spectrogram::fft(QVector<double>& data)
 {
+
     int nbData = data.size();
     if(nbData < NFFT)
     {
         for(int i = 0; i < NFFT - nbData; i++)
-            data.push_back(0.0);
+            data << 0.0;
     }
 
     double fft[NFFT];
 
     m_transformer.forwardTransform(data.data(), fft);
+    QComplexVector complexVec = m_transformer.toComplex(fft);
 
-    for(int i = 0; i < NFFT / 2; i++)
+
+    for(int i = 0; i < complexVec.size()-1; i++)
     {
-        double tmp = std::log(std::abs(fft[i])* 1e6);
+        /*double tmp = std::log(std::abs(fft[i]));
         tmp = tmp >= 0 ? tmp : 0;
-        m_out.push_back(20*std::abs(tmp));
+        m_out.push_back(20*std::abs(tmp));*/
+
+        double real = complexVec[i].real();
+        double imag = complexVec[i].imaginary();
+
+        m_out.push_back(10*std::log(real*real + imag*imag)*1e6);
     }
 }
 
 void Spectrogram::computeFFT()
 {
     m_out.clear();
+
     std::vector<qreal> data = Track::get()->getData().toStdVector();
     double overlapPerc = 0.5;
 
-    int chunkSize = temporalResolution * Track::get()->getFormat().sampleRate();
+    int chunkSize = int(temporalResolution * double(Track::get()->getFormat().sampleRate()));
     int overlap = chunkSize * overlapPerc;
 
     std::vector<qreal> tmp(data.begin(), data.begin() + chunkSize);
@@ -47,7 +56,7 @@ void Spectrogram::computeFFT()
 
     fft(buf);
 
-    for(int i = 1; i < (data.size() / chunkSize); i++)
+    for(int i = 1; i < (data.size() / chunkSize) - 1; i++)
     {
         int n = i * chunkSize;
 
