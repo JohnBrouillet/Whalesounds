@@ -200,7 +200,7 @@ Item{
         }
         Button{
             id: expertMode
-            text: "Ouvrir dans le mode expert"
+            text: "Ouvrir dans le mode avancé"
             Layout.fillWidth: true
             height: 20
             onClicked: { shower.show(); audioFile.stop(); }

@@ -12,28 +12,30 @@ Spectrogram::Spectrogram()
     m_transformer.setWindowFunction("Hamming");
 }
 
-void Spectrogram::fft(QVector<double>& data)
+
+void Spectrogram::fft(QVector<double>& data, bool padding)
 {
     int nbData = data.size();
-    if(nbData < NFFT)
+    if(padding)
     {
         for(int i = 0; i < NFFT - nbData; i++)
-            data.push_back(0.0);
+            data << 0.0;
     }
 
     double fft[NFFT];
 
     m_transformer.forwardTransform(data.data(), fft);
     QComplexVector complexVec = m_transformer.toComplex(fft);
+
+
     for(int i = 0; i < complexVec.size()-1; i++)
     {
-        /*double tmp = std::log(std::abs(fft[i])* 1e6);
-        tmp = tmp >= 0 ? tmp : 0;
-        m_out.push_back(20*std::abs(tmp));*/
 
         double real = complexVec[i].real();
-        double img = complexVec[i].imaginary();
-        m_out.push_back(10*std::log((real*real + img*img)*1e6));
+        double imag = complexVec[i].imaginary();
+
+        m_out.push_back(20*std::log((real*real + imag*imag)*1e6));
+
     }
 }
 
@@ -42,25 +44,40 @@ void Spectrogram::computeFFT()
     m_out.clear();
 
     std::vector<qreal> data = Track::get()->getData().toStdVector();
-    double overlapPerc = 0.5;
+    double overlapPerc = 0.0;
 
-    int chunkSize = temporalResolution * Track::get()->getFormat().sampleRate();
-    int overlap = chunkSize * overlapPerc;
+    int resolutionSize = int(temporalResolution * double(Track::get()->getFormat().sampleRate()));
+    int chunkSize = NFFT;
+    int overlap = (chunkSize - resolutionSize) / 2;
 
-    std::vector<qreal> tmp(data.begin(), data.begin() + chunkSize);
-    QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
 
     m_out.reserve((data.size() / chunkSize)*NFFT/2);
-    fft(buf);
 
-    for(int i = 1; i < (data.size() / chunkSize)-1; i++)
+
+    for(int i = 0; i < (data.size() / resolutionSize) - 1; i++)
     {
-        int n = i * chunkSize;
+        int n = i * resolutionSize;
+        QVector<qreal> buf;
 
-        std::vector<qreal> tmp(data.begin() + n - overlap, data.begin() + n + chunkSize);
-        QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
+        if(((n + resolutionSize + overlap) < data.size()) && n > chunkSize)
+        {
+            std::vector<qreal> tmp(data.begin() + n - overlap-1, data.begin() + n + resolutionSize + overlap);
+            buf = QVector<qreal>::fromStdVector(tmp);
+            fft(buf, false);
+        }
+        else if(n < chunkSize)
+        {
+            std::vector<qreal> tmp(data.begin() + n , data.begin() + n + resolutionSize);
+            buf = QVector<qreal>::fromStdVector(tmp);
+            fft(buf, true);
 
-        fft(buf);
+        }
+        else
+        {
+            std::vector<qreal> tmp(data.begin() + n, data.end());
+            buf = QVector<qreal>::fromStdVector(tmp);
+            fft(buf, true);
+        }
     }
     emit dataReady(m_out);
 }
