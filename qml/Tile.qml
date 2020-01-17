@@ -37,7 +37,32 @@ Item{
 
         MouseArea{
             anchors.fill: parent
-            onClicked: tile.stateVisible = false
+        }
+
+    
+        Rectangle{
+            id: close
+            width: 32
+            height: 32
+            Image{
+                source: "qrc:///icons/whalesounds/32x32/plus.png"
+                sourceSize.width: close.width
+                sourceSize.height: close.height
+                anchors.fill: parent
+                rotation: 45
+            }
+            radius: close.width / 2
+            anchors.topMargin: -close.width / 2 + 5
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.rightMargin: -close.width / 2 + 5
+            
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: tile.stateVisible = false
+            }
+
         }
     }
 
