@@ -28,7 +28,11 @@ MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", pat
 
     connect(&m_spectrum, &Spectrogram::dataReady, m_spectro, &SpectrogramWidget::plot);
 
-    QQuickWidget *buttonsWidget = new QQuickWidget;
+    connect(m_audioWidget, SIGNAL(axisChange(QCPRange)), m_spectro, SLOT(moveAxis(QCPRange)));
+    connect(m_spectro, SIGNAL(axisChange(QCPRange)), m_audioWidget, SLOT(moveAxis(QCPRange)));
+
+
+    QQuickWidget* buttonsWidget = new QQuickWidget;
     buttonsWidget->setClearColor(QColor("#dfe4ea"));
     buttonsWidget->rootContext()->setContextProperty("jsoncare", &m_jsoncare);
     buttonsWidget->rootContext()->setContextProperty("playercontrols", m_controls);
