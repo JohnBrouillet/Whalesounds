@@ -309,9 +309,10 @@ Item {
                 CheckBox{
                     id: checkX
                     visible: true
+                    checked: true
                     onCheckedChanged: {
                         spectrogram.zoom(checkX.checkState, checkY.checkState);
-                        audiograph.zoom(checkX.checkState, checkY.checkState);
+                        audiograph.zoom(checkX.checkState, false);
                     }
                 }
 
@@ -321,8 +322,21 @@ Item {
                     icon.height: 32
 
                     onClicked:{
-                        spectrogram.zoomSpectro(1);
-                        if(!checkY.checkState) audiograph.zoomSpectro(1);
+                        if(layout.spectroOrAudio())
+                            spectrogram.zoomSpectro(1);
+                        else
+                        {
+                            if(checkX.checkState && !checkY.checkState)
+                                audiograph.zoomSpectro(1);
+                            else if(checkY.checkState && !checkX.checkState)
+                                spectrogram.zoomSpectro(1);
+                            else if(checkX.checkState && checkY.checkState)
+                            {
+                                audiograph.zoomSpectro(1);
+                                spectrogram.zoomSpectro(1);
+                            }
+
+                        }
                     }
                 }
 ////////////////////
@@ -334,7 +348,7 @@ Item {
                     id: checkY
                     onCheckedChanged: {
                         spectrogram.zoom(checkX.checkState, checkY.checkState);
-                        audiograph.zoom(checkX.checkState, checkY.checkState);
+                        audiograph.zoom(checkX.checkState, false);
                     }
                 }
 
@@ -344,8 +358,20 @@ Item {
                     icon.height: 32
 
                     onClicked: {
-                        spectrogram.zoomSpectro(0);
-                        if(!checkY.checkState) audiograph.zoomSpectro(0);
+                        if(layout.spectroOrAudio())
+                            spectrogram.zoomSpectro(0);
+                        else
+                        {
+                            if(checkX.checkState && !checkY.checkState)
+                                audiograph.zoomSpectro(0);
+                            else if(checkY.checkState && !checkX.checkState)
+                                spectrogram.zoomSpectro(0);
+                            else if(checkX.checkState && checkY.checkState)
+                            {
+                                audiograph.zoomSpectro(0);
+                                spectrogram.zoomSpectro(0);
+                            }
+                        }
                     }
                 }
 ////////////////////

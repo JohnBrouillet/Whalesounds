@@ -21,6 +21,7 @@ public:
 
 public Q_SLOTS:
     void reverseGraph();
+    bool spectroOrAudio(){ return xaxisSpectroOrAudio; }
 
 private:
     PlayerControls * m_controls;
@@ -33,6 +34,8 @@ private:
     QThread * m_spectroThread;
 
     qint64 m_duration;
+
+    bool xaxisSpectroOrAudio;
 };
 
 #endif // MAINWIDGET_H

@@ -21,16 +21,14 @@ MainWidget::MainWidget(QString path) : m_jsoncare(path + "/whale_data.json", pat
     m_spectroThread->start();
 
     m_spectro = new SpectrogramWidget;
+    xaxisSpectroOrAudio = true;
 
     connect(m_controls, &PlayerControls::newTrack, m_spectro, &SpectrogramWidget::setAxis);
     connect(m_controls, &PlayerControls::newPosition, m_spectro, &SpectrogramWidget::updateCursor);
     connect(m_controls, &PlayerControls::newTrack, &m_spectrum, &Spectrogram::computeFFT);
 
     connect(&m_spectrum, &Spectrogram::dataReady, m_spectro, &SpectrogramWidget::plot);
-
-    connect(m_audioWidget, SIGNAL(axisChange(QCPRange)), m_spectro, SLOT(moveAxis(QCPRange)));
     connect(m_spectro, SIGNAL(axisChange(QCPRange)), m_audioWidget, SLOT(moveAxis(QCPRange)));
-
 
     QQuickWidget* buttonsWidget = new QQuickWidget;
     buttonsWidget->setClearColor(QColor("#dfe4ea"));
@@ -68,6 +66,21 @@ void MainWidget::reverseGraph()
 
     m_grid->addWidget(m_spectro, row1, column1, rowSpan1, columnSpan1);
     m_grid->addWidget(m_audioWidget, row2, column2, rowSpan2, columnSpan2);
+
+    xaxisSpectroOrAudio = !xaxisSpectroOrAudio;
+    if(xaxisSpectroOrAudio)
+    {
+        disconnect(m_audioWidget, SIGNAL(axisChange(QCPRange)), m_spectro, SLOT(moveAxis(QCPRange)));
+        connect(m_spectro, SIGNAL(axisChange(QCPRange)), m_audioWidget, SLOT(moveAxis(QCPRange)));
+        m_audioWidget->zoom(false, false);
+
+    }
+    else
+    {
+        connect(m_audioWidget, SIGNAL(axisChange(QCPRange)), m_spectro, SLOT(moveAxis(QCPRange)));
+        m_audioWidget->zoom(true, false);
+        disconnect(m_spectro, SIGNAL(axisChange(QCPRange)), m_audioWidget, SLOT(moveAxis(QCPRange)));
+    }
 }
 
 MainWidget::~MainWidget()

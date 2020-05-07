@@ -26,13 +26,8 @@ void Spectrogram::fft(QVector<double>& data, bool padding)
     m_transformer.forwardTransform(data.data(), fft);
     QComplexVector complexVec = m_transformer.toComplex(fft);
 
-
     for(int i = 0; i < complexVec.size()-1; i++)
     {
-        /*double tmp = std::log(std::abs(fft[i]));
-        tmp = tmp >= 0 ? tmp : 0;
-        m_out.push_back(20*std::abs(tmp));*/
-
         double real = complexVec[i].real();
         double imag = complexVec[i].imaginary();
 
@@ -43,42 +38,27 @@ void Spectrogram::fft(QVector<double>& data, bool padding)
 void Spectrogram::computeFFT()
 {
     m_out.clear();
-
     std::vector<qreal> data = Track::get()->getData().toStdVector();
-    double overlapPerc = 0.0;
+    double overlapPerc = 0.5;
 
-    int resolutionSize = int(temporalResolution * double(Track::get()->getFormat().sampleRate()));
-    int chunkSize = NFFT;
-    int overlap = (chunkSize - resolutionSize) / 2;
+    int chunkSize = temporalResolution * Track::get()->getFormat().sampleRate();
+    int overlap = chunkSize * overlapPerc;
 
+    std::vector<qreal> tmp(data.begin(), data.begin() + chunkSize);
+    QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
 
-    for(int i = 0; i < (data.size() / resolutionSize) - 1; i++)
+    fft(buf, true);
+
+    for(int i = 1; i < (data.size() / chunkSize); i++)
     {
-        int n = i * resolutionSize;
-        QVector<qreal> buf;
+      int n = i * chunkSize;
 
-        if(((n + resolutionSize + overlap) < data.size()) && n > chunkSize)
-        {
-            std::vector<qreal> tmp(data.begin() + n - overlap-1, data.begin() + n + resolutionSize + overlap);
-            buf = QVector<qreal>::fromStdVector(tmp);
-            fft(buf, false);
-        }
-        else if(n < chunkSize)
-        {
-            std::vector<qreal> tmp(data.begin() + n , data.begin() + n + resolutionSize);
-            buf = QVector<qreal>::fromStdVector(tmp);
-            fft(buf, true);
+      std::vector<qreal> tmp(data.begin() + n - overlap, data.begin() + n + chunkSize);
+      qreal moy = std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size();
+      std::transform(tmp.begin(), tmp.end(), tmp.begin(), [&](qreal i){ return i - moy;});
+      QVector<qreal> buf = QVector<qreal>::fromStdVector(tmp);
 
-        }
-        else
-        {
-            std::vector<qreal> tmp(data.begin() + n, data.end());
-            buf = QVector<qreal>::fromStdVector(tmp);
-            fft(buf, true);
-        }
-
-
-
+      fft(buf,true);
     }
     emit dataReady(m_out);
 }
