@@ -14,6 +14,8 @@ AbstractPlot::AbstractPlot() : m_plot(new QCustomPlot)
     m_cursor->start->setCoords(0, -QCPRange::maxRange);
     m_cursor->end->setCoords(0, QCPRange::maxRange);
 
+    connect(m_plot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SIGNAL(axisChange(QCPRange)));
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_plot);
     setLayout(mainLayout);
@@ -91,13 +93,19 @@ double AbstractPlot::getZoomFactor(bool zoom)
     return zoom ? 0.85 : 1.17647;
 }
 
+void AbstractPlot::moveAxis(QCPRange range)
+{
+    m_plot->xAxis->setRange(range);
+    m_plot->replot();
+}
+
 void AbstractPlot::design()
 {
     m_plot->setBackground(QBrush(QColor("#dfe4ea")));
     m_plot->axisRect()->setBackground(QColor("#ffffff"));
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
-    timeTicker->setTimeFormat("%m:%s");
+    timeTicker->setTimeFormat("%m:%s:%z");
     timeTicker->setTickCount(5);
     m_plot->xAxis->setTicker(timeTicker);
     m_plot->setInteraction(QCP::iRangeDrag, true);

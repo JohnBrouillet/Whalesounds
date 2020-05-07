@@ -6,6 +6,8 @@
 
 SpectrogramWidget::SpectrogramWidget()
 {
+    m_zoomX = true;
+
     m_colorMap = new QCPColorMap(m_plot->xAxis, m_plot->yAxis);
     m_colorScale = new QCPColorScale(m_plot);
 
@@ -36,7 +38,7 @@ void SpectrogramWidget::setAxis()
 {
     int fech = Track::get()->getFormat().sampleRate();
 
-    m_nbLines = Track::get()->getData().size() / double( temporalResolution * fech );
+    m_nbLines = Track::get()->getData().size() / double( temporalResolution * fech ) - 1;
 
     m_colorMap->data()->setSize(m_nbLines, NFFT/2);
     m_colorMap->data()->setRange(QCPRange(0, m_nbLines*temporalResolution), QCPRange(0, fech/2));
@@ -59,15 +61,15 @@ void SpectrogramWidget::design()
 
     m_colorScale->setGradient(QCPColorGradient::gpPolar);
     m_colorScale->setDataRange(QCPRange(0, 350));
-    m_colorScale->setType(QCPAxis::atRight); // scale shall be vertical bar with tick/axis labels right (actually atRight is already the default)
-    m_colorMap->setColorScale(m_colorScale); // associate the color map with the color scale
+    m_colorScale->setType(QCPAxis::atRight);
+    m_colorMap->setColorScale(m_colorScale);
 
     m_plot->plotLayout()->addElement(0, 1, m_colorScale);
 
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_plot->axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
     m_colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
-    // rescale the key (x) and value (y) axes so the whole color map is visible:
+
     m_plot->rescaleAxes();
 }
 

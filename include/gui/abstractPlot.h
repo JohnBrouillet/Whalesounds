@@ -16,7 +16,11 @@ public Q_SLOTS:
     void updateCursor(double position);
     void zoom(bool X, bool Y);
     void zoomActivation();
-    void zoomSpectro(bool value);
+    void zoomSpectro(bool value);   
+    void moveAxis(QCPRange range);
+
+Q_SIGNALS:
+    void axisChange(QCPRange);
 
 protected:
     QCustomPlot * m_plot;
