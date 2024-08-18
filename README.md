@@ -1,7 +1,7 @@
 ## WhaleSounds
 WhaleSounds is a super user-friendly, free and open source application for marine sounds listening. 
 
-It is primarily an educational software used during animations or expositions of [Longitude 181](https://www.longitude181.org). And can be downloaded [here](https://www.longitude181.org/espace-momes/).
+It is primarily an educational software used during events.
 
 Spectrogram is used as a simple example to teach people how acoustic researchers can study a sound. Besides, it is cool to watch.
 
